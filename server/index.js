@@ -1,6 +1,11 @@
-import 'dotenv/config'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
+import { config } from 'dotenv'
 import express from 'express'
 import cors from 'cors'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+config({ path: join(__dirname, '.env'), quiet: true })
 
 const app = express()
 app.use(cors())
