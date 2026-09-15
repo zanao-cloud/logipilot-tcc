@@ -10,7 +10,10 @@
 }
 
 .logo {
-  height: 36px;
+  height: 32px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
 }
 
 .item {
