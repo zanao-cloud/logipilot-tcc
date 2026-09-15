@@ -34,7 +34,7 @@ const HomeGestor = () => {
     .slice(0, 5)
 
   return (
-    <div className="d-flex">
+    <div className="d-flex flex-column flex-md-row">
       <SidebarGestor />
 
       <div className="flex-grow-1 p-4">

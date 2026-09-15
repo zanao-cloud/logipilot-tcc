@@ -20,7 +20,7 @@ const HomeOperador = () => {
   const recentes = [...minhasAnalises].sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm)).slice(0, 5)
 
   return (
-    <div className="d-flex">
+    <div className="d-flex flex-column flex-md-row">
       <SidebarOperador />
 
       <div className="flex-grow-1 p-4">

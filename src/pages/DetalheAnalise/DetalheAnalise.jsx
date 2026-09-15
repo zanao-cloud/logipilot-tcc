@@ -46,7 +46,7 @@ const DetalheAnalise = () => {
 
   if (!analise) {
     return (
-      <div className="d-flex">
+      <div className="d-flex flex-column flex-md-row">
         <Sidebar />
         <div className="flex-grow-1 p-4">
           <p>Carregando análise...</p>
@@ -59,7 +59,7 @@ const DetalheAnalise = () => {
   const previsao = preverTendencia(serieTemporal || [])
 
   return (
-    <div className="d-flex">
+    <div className="d-flex flex-column flex-md-row">
       <Sidebar />
 
       <div className="flex-grow-1 p-4">

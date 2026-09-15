@@ -37,7 +37,7 @@ const ListarAcesso = () => {
   }
 
   return (
-    <div className="d-flex">
+    <div className="d-flex flex-column flex-md-row">
       <SidebarGestor />
 
       <div className="flex-grow-1 p-4">
