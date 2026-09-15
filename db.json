@@ -1,0 +1,83 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Ana Ribeiro",
+      "email": "gestor@logipilot.com",
+      "senha": "123456",
+      "papel": "gestor",
+      "telefone": "(11) 99999-0001"
+    },
+    {
+      "id": 2,
+      "nome": "Bruno Alves",
+      "email": "operador@logipilot.com",
+      "senha": "123456",
+      "papel": "operador",
+      "telefone": "(11) 99999-0002"
+    },
+    {
+      "id": 3,
+      "nome": "Carlos Souza",
+      "email": "motorista@logipilot.com",
+      "senha": "123456",
+      "papel": "motorista",
+      "telefone": "(11) 99999-0003",
+      "placa": "ABC1D23"
+    }
+  ],
+  "projetos": [
+    {
+      "id": 1,
+      "nome": "Distribuição Regional SP",
+      "cliente": "Mercado Azul",
+      "criadoEm": "2026-02-10"
+    },
+    {
+      "id": 2,
+      "nome": "Entregas Expressas RJ",
+      "cliente": "Loja Rápida",
+      "criadoEm": "2026-03-01"
+    }
+  ],
+  "analises": [
+    {
+      "id": 1,
+      "titulo": "Operação Fevereiro - Distribuição SP",
+      "projetoId": 1,
+      "criadoPorId": 2,
+      "status": "concluida",
+      "criadoEm": "2026-02-15",
+      "serieTemporal": [120, 135, 128, 150, 162, 158, 170],
+      "resultado": {
+        "resumo": {
+          "titulo": "Diagnóstico da Operação - Fevereiro",
+          "visaoGeral": "A operação de distribuição em São Paulo apresentou crescimento no volume de entregas ao longo do mês, com leve instabilidade na segunda semana.",
+          "destaques": [
+            "Volume de entregas cresceu 41% entre a primeira e a última semana",
+            "Custo médio por entrega caiu 6% no período",
+            "Um ponto fora da curva foi identificado na semana 3"
+          ]
+        },
+        "indicadores": [
+          { "nome": "Entregas no período", "valor": "1.023", "unidade": "entregas", "tendencia": "alta" },
+          { "nome": "Custo médio por entrega", "valor": "18,40", "unidade": "R$", "tendencia": "baixa" },
+          { "nome": "Taxa de atraso", "valor": "7,2", "unidade": "%", "tendencia": "estavel" }
+        ],
+        "diagnostico": "O crescimento no volume de entregas é positivo, mas a taxa de atraso ainda está acima do ideal (5%). A queda no custo médio indica ganho de eficiência nas rotas.",
+        "planoDeAcao": [
+          {
+            "titulo": "Reforçar equipe na semana de pico",
+            "descricao": "Adicionar motoristas extras nos dias de maior volume para reduzir atrasos.",
+            "prioridade": "alta"
+          },
+          {
+            "titulo": "Revisar rotas da região central",
+            "descricao": "Reavaliar o roteiro das entregas com maior índice de atraso.",
+            "prioridade": "media"
+          }
+        ]
+      }
+    }
+  ]
+}
