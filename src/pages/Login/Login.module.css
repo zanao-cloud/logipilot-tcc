@@ -1,0 +1,18 @@
+.pagina {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a1628;
+}
+
+.card {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 12px;
+  border: none;
+}
+
+.logo {
+  height: 48px;
+}
