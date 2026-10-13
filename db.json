@@ -1,29 +1,45 @@
 {
   "usuarios": [
     {
-      "id": "1",
-      "nome": "Ana Ribeiro",
-      "email": "gestor@logipilot.com",
-      "senha": "123456",
+      "nome": "João Victor Zanão dos Santos",
+      "email": "joaozanao7@gmail.com",
+      "senha": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
       "papel": "gestor",
-      "telefone": "(11) 99999-0001"
+      "telefone": "11939369341",
+      "id": "StA4qrKjoqc"
     },
     {
-      "id": "2",
-      "nome": "Bruno Alves",
-      "email": "operador@logipilot.com",
-      "senha": "123456",
-      "papel": "operador",
-      "telefone": "(11) 99999-0002"
-    },
-    {
-      "id": "3",
-      "nome": "Carlos Souza",
-      "email": "motorista@logipilot.com",
-      "senha": "123456",
+      "nome": "TH",
+      "email": "th@gmail.com",
+      "senha": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
       "papel": "motorista",
-      "telefone": "(11) 99999-0003",
-      "placa": "ABC1D23"
+      "telefone": "999999",
+      "placa": "ABCDE",
+      "id": "JoWjMAcXzJ0"
+    }
+  ],
+  "clientes": [
+    {
+      "id": "c1",
+      "nome": "Mercado Azul",
+      "documento": "12.345.678/0001-90",
+      "responsavel": "Ana Souza",
+      "telefone": "1133224455",
+      "email": "contato@mercadoazul.com.br",
+      "endereco": "Rua das Flores, 120",
+      "cidade": "São Paulo",
+      "criadoEm": "2026-02-10"
+    },
+    {
+      "id": "c2",
+      "nome": "Loja Rápida",
+      "documento": "98.765.432/0001-10",
+      "responsavel": "Carlos Lima",
+      "telefone": "2133445566",
+      "email": "compras@lojarapida.com.br",
+      "endereco": "Av. Brasil, 850",
+      "cidade": "Rio de Janeiro",
+      "criadoEm": "2026-03-01"
     }
   ],
   "projetos": [
@@ -31,76 +47,1414 @@
       "id": "1",
       "nome": "Distribuição Regional SP",
       "cliente": "Mercado Azul",
-      "criadoEm": "2026-02-10"
+      "criadoEm": "2026-02-10",
+      "clienteId": "c1"
     },
     {
       "id": "2",
       "nome": "Entregas Expressas RJ",
       "cliente": "Loja Rápida",
-      "criadoEm": "2026-03-01"
+      "criadoEm": "2026-03-01",
+      "clienteId": "c2"
     }
   ],
+  "entregas": [],
   "analises": [
     {
-      "id": "1",
-      "titulo": "Operação Fevereiro - Distribuição SP",
-      "projetoId": 1,
-      "criadoPorId": 2,
+      "titulo": "Teste1",
+      "projetoId": "1",
+      "criadoPorId": "StA4qrKjoqc",
       "status": "concluida",
-      "criadoEm": "2026-02-15",
+      "criadoEm": "2026-10-06",
       "serieTemporal": [
-        120,
-        135,
-        128,
-        150,
-        162,
-        158,
-        170
+        {
+          "rotulo": "ENT000001",
+          "valor": 1063.1
+        },
+        {
+          "rotulo": "ENT000002",
+          "valor": 315.6
+        },
+        {
+          "rotulo": "ENT000003",
+          "valor": 4217.7
+        },
+        {
+          "rotulo": "ENT000004",
+          "valor": 3290.7
+        },
+        {
+          "rotulo": "ENT000005",
+          "valor": 638.1
+        },
+        {
+          "rotulo": "ENT000006",
+          "valor": 2165.4
+        },
+        {
+          "rotulo": "ENT000007",
+          "valor": 808.7
+        },
+        {
+          "rotulo": "ENT000008",
+          "valor": 295
+        },
+        {
+          "rotulo": "ENT000009",
+          "valor": 3278.1
+        },
+        {
+          "rotulo": "ENT000010",
+          "valor": 2008.2
+        },
+        {
+          "rotulo": "ENT000011",
+          "valor": 817.6
+        },
+        {
+          "rotulo": "ENT000012",
+          "valor": 2139.5
+        },
+        {
+          "rotulo": "ENT000013",
+          "valor": 2355.9
+        },
+        {
+          "rotulo": "ENT000014",
+          "valor": 3295
+        },
+        {
+          "rotulo": "ENT000015",
+          "valor": 3278.6
+        },
+        {
+          "rotulo": "ENT000016",
+          "valor": 3239.4
+        },
+        {
+          "rotulo": "ENT000017",
+          "valor": 3093.6
+        },
+        {
+          "rotulo": "ENT000018",
+          "valor": 3146.6
+        },
+        {
+          "rotulo": "ENT000019",
+          "valor": 3076.8
+        },
+        {
+          "rotulo": "ENT000020",
+          "valor": 2770.9
+        },
+        {
+          "rotulo": "ENT000021",
+          "valor": 308.8
+        },
+        {
+          "rotulo": "ENT000022",
+          "valor": 736.8
+        },
+        {
+          "rotulo": "ENT000023",
+          "valor": 4313.6
+        },
+        {
+          "rotulo": "ENT000024",
+          "valor": 682.4
+        },
+        {
+          "rotulo": "ENT000025",
+          "valor": 757.5
+        },
+        {
+          "rotulo": "ENT000026",
+          "valor": 196.3
+        },
+        {
+          "rotulo": "ENT000027",
+          "valor": 463.6
+        },
+        {
+          "rotulo": "ENT000028",
+          "valor": 622.8
+        },
+        {
+          "rotulo": "ENT000029",
+          "valor": 2896.1
+        },
+        {
+          "rotulo": "ENT000030",
+          "valor": 3377.7
+        },
+        {
+          "rotulo": "ENT000031",
+          "valor": 4296.6
+        },
+        {
+          "rotulo": "ENT000032",
+          "valor": 2073.3
+        },
+        {
+          "rotulo": "ENT000033",
+          "valor": 2744.9
+        },
+        {
+          "rotulo": "ENT000034",
+          "valor": 444.2
+        },
+        {
+          "rotulo": "ENT000035",
+          "valor": 195.2
+        },
+        {
+          "rotulo": "ENT000036",
+          "valor": 776.5
+        },
+        {
+          "rotulo": "ENT000037",
+          "valor": 2805.4
+        },
+        {
+          "rotulo": "ENT000038",
+          "valor": 3525.1
+        },
+        {
+          "rotulo": "ENT000039",
+          "valor": 3378.6
+        },
+        {
+          "rotulo": "ENT000040",
+          "valor": 643.8
+        },
+        {
+          "rotulo": "ENT000041",
+          "valor": 824.6
+        },
+        {
+          "rotulo": "ENT000042",
+          "valor": 1464.2
+        },
+        {
+          "rotulo": "ENT000043",
+          "valor": 4160
+        },
+        {
+          "rotulo": "ENT000044",
+          "valor": 2018.6
+        },
+        {
+          "rotulo": "ENT000045",
+          "valor": 3623.9
+        },
+        {
+          "rotulo": "ENT000046",
+          "valor": 468.6
+        },
+        {
+          "rotulo": "ENT000047",
+          "valor": 312.5
+        },
+        {
+          "rotulo": "ENT000048",
+          "valor": 1379.3
+        },
+        {
+          "rotulo": "ENT000049",
+          "valor": 2800.2
+        },
+        {
+          "rotulo": "ENT000050",
+          "valor": 3702.3
+        },
+        {
+          "rotulo": "ENT000051",
+          "valor": 732.6
+        },
+        {
+          "rotulo": "ENT000052",
+          "valor": 733.1
+        },
+        {
+          "rotulo": "ENT000053",
+          "valor": 770.1
+        },
+        {
+          "rotulo": "ENT000054",
+          "valor": 4099
+        },
+        {
+          "rotulo": "ENT000055",
+          "valor": 1984.9
+        },
+        {
+          "rotulo": "ENT000056",
+          "valor": 930.9
+        },
+        {
+          "rotulo": "ENT000057",
+          "valor": 636.9
+        },
+        {
+          "rotulo": "ENT000058",
+          "valor": 1839.3
+        },
+        {
+          "rotulo": "ENT000059",
+          "valor": 451.9
+        },
+        {
+          "rotulo": "ENT000060",
+          "valor": 774.5
+        }
+      ],
+      "fontes": [
+        "LogiPilot_Planilha_Teste_Operacional.xlsx (Excel)"
       ],
       "resultado": {
         "resumo": {
-          "titulo": "Diagnóstico da Operação - Fevereiro",
-          "visaoGeral": "A operação de distribuição em São Paulo apresentou crescimento no volume de entregas ao longo do mês, com leve instabilidade na segunda semana.",
+          "titulo": "Teste1",
+          "visaoGeral": "Os dados mostram 5.200 entregas realizadas, com taxa geral de atraso de 46,5% e custo total de frete de R$ 3.322.094,22. A região Norte apresenta desempenho crítico, com 61,1% de atrasos, custo médio de combustível de R$ 3.234,57 e avaliação média de 2,89. O motorista MT059 e o veículo OLD1A23 são citados como pontos de atenção.",
+          "periodo": "não informado",
           "destaques": [
-            "Volume de entregas cresceu 41% entre a primeira e a última semana",
-            "Custo médio por entrega caiu 6% no período",
-            "Um ponto fora da curva foi identificado na semana 3"
+            "Taxa de atraso geral de 46,5% indica necessidade de melhorias.",
+            "Região Norte tem a maior taxa de atraso (61,1%) e custos de combustível elevados.",
+            "Avaliação média geral é 3,18, abaixo do ideal (>=4).",
+            "Motorista MT059 aparece associado a entregas atrasadas.",
+            "Custo médio por entrega é aproximadamente R$ 638,48."
           ]
         },
         "indicadores": [
           {
-            "nome": "Entregas no período",
-            "valor": "1.023",
+            "nome": "Entregas Totais",
+            "valor": "5200",
             "unidade": "entregas",
-            "tendencia": "alta"
+            "tendencia": "estavel",
+            "situacao": "neutra"
           },
           {
-            "nome": "Custo médio por entrega",
-            "valor": "18,40",
-            "unidade": "R$",
-            "tendencia": "baixa"
-          },
-          {
-            "nome": "Taxa de atraso",
-            "valor": "7,2",
+            "nome": "Taxa de Atraso Geral",
+            "valor": "0.465",
             "unidade": "%",
-            "tendencia": "estavel"
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Custo Total de Frete",
+            "valor": "3322094.22",
+            "unidade": "R$",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Custo Médio de Combustível",
+            "valor": "2223.55667692308",
+            "unidade": "R$",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Avaliação Média do Cliente",
+            "valor": "3.17788461538462",
+            "unidade": "escala 1-5",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Custo Médio por Entrega",
+            "valor": "638.48",
+            "unidade": "R$",
+            "tendencia": "estavel",
+            "situacao": "atencao"
           }
         ],
-        "diagnostico": "O crescimento no volume de entregas é positivo, mas a taxa de atraso ainda está acima do ideal (5%). A queda no custo médio indica ganho de eficiência nas rotas.",
-        "planoDeAcao": [
+        "diagnostico": {
+          "scoreSaude": 65,
+          "avaliacaoGeral": "A operação apresenta indicadores de desempenho abaixo do desejado, especialmente na região Norte, onde a combinação de alta taxa de atraso, custos de combustível elevados e baixa avaliação do cliente indica gargalos críticos que impactam a rentabilidade.",
+          "fatosObservados": [
+            "Taxa de atraso geral de 46,5% (0.465).",
+            "Região Norte com taxa de atraso de 61,1% (0.611197511664075).",
+            "Custo médio de combustível na região Norte de R$ 3.234,57 (valor máximo nas estatísticas).",
+            "Avaliação média na região Norte de 2,89 (menor entre as regiões).",
+            "Motorista MT059 está associado a entregas com atraso (ex.: ENT000001, ENT000003)."
+          ],
+          "hipoteses": [
+            "Rotas da região Norte podem ser mais longas ou ter infraestrutura deficiente, gerando atrasos e maior consumo de combustível.",
+            "Possível falta de disponibilidade de motoristas ou problemas de planejamento de escala, refletido no alto número de ocorrências (312) na região Norte.",
+            "Veículo OLD1A23, citado como de alta manutenção, pode estar contribuindo para atrasos e custos de combustível elevados."
+          ]
+        },
+        "gargalos": [
           {
-            "titulo": "Reforçar equipe na semana de pico",
-            "descricao": "Adicionar motoristas extras nos dias de maior volume para reduzir atrasos.",
-            "prioridade": "alta"
+            "titulo": "Alta taxa de atraso na região Norte",
+            "descricao": "61,1% das entregas na região Norte chegam atrasadas, muito acima da média nacional.",
+            "severidade": "alta",
+            "evidencia": "Taxa_Atraso_% = 0.611197511664075 para a região Norte",
+            "impacto": "Redução da satisfação do cliente e aumento de custos operacionais."
           },
           {
-            "titulo": "Revisar rotas da região central",
-            "descricao": "Reavaliar o roteiro das entregas com maior índice de atraso.",
-            "prioridade": "media"
+            "titulo": "Custo médio de combustível elevado",
+            "descricao": "Custo médio de combustível de R$ 3.234,57 na região Norte supera a média geral de R$ 2.223,56.",
+            "severidade": "media",
+            "evidencia": "Custo_Medio_Combustivel_R$ = 3234.5698600311 (Norte) vs 2223.55667692308 (geral)",
+            "impacto": "Erosão da margem de lucro."
+          },
+          {
+            "titulo": "Baixa avaliação dos clientes na região Norte",
+            "descricao": "Avaliação média de 2,89 na região Norte indica insatisfação.",
+            "severidade": "media",
+            "evidencia": "Avaliacao_Media = 2.89269051321928 (Norte)",
+            "impacto": "Risco de perda de contratos e reputação."
+          },
+          {
+            "titulo": "Desempenho do motorista MT059",
+            "descricao": "Motorista MT059 está associado a múltiplas entregas atrasadas.",
+            "severidade": "baixa",
+            "evidencia": "Entregas ENT000001, ENT000003 com atraso e Motorista_ID = MT059",
+            "impacto": "Contribui para a taxa de atraso geral."
+          },
+          {
+            "titulo": "Veículo OLD1A23 com alta manutenção",
+            "descricao": "Veículo citado como de alta manutenção pode gerar falhas e atrasos.",
+            "severidade": "baixa",
+            "evidencia": "Veiculo_Placa = OLD1A23 presente nas entregas atrasadas",
+            "impacto": "Aumenta custos de reparo e tempo de inatividade."
           }
+        ],
+        "oportunidades": [
+          {
+            "titulo": "Revisão e otimização de rotas na região Norte",
+            "descricao": "Aplicar análise de roteirização para reduzir distância percorrida e tempo de viagem.",
+            "impactoPotencial": "Redução da taxa de atraso e do custo de combustível.",
+            "esforco": "medio"
+          },
+          {
+            "titulo": "Negociação de contrato de combustível",
+            "descricao": "Buscar tarifas mais competitivas ou fontes alternativas de combustível para a frota da região Norte.",
+            "impactoPotencial": "Diminuição do custo médio de combustível em até 15%.",
+            "esforco": "baixo"
+          },
+          {
+            "titulo": "Treinamento e requalificação do motorista MT059",
+            "descricao": "Capacitar o motorista em práticas de condução eficiente e gestão de tempo.",
+            "impactoPotencial": "Redução de atrasos associados ao motorista.",
+            "esforco": "baixo"
+          },
+          {
+            "titulo": "Manutenção preventiva do veículo OLD1A23",
+            "descricao": "Implementar plano de manutenção preventiva para reduzir falhas mecânicas.",
+            "impactoPotencial": "Menor número de cancelamentos e atrasos por pane mecânica.",
+            "esforco": "medio"
+          },
+          {
+            "titulo": "Programa de incentivo à avaliação positiva",
+            "descricao": "Criar incentivos para clientes que avaliem acima de 4, estimulando melhorias de serviço.",
+            "impactoPotencial": "Aumento da avaliação média geral.",
+            "esforco": "baixo"
+          }
+        ],
+        "planoDeAcao": [
+          {
+            "titulo": "Mapeamento detalhado das rotas da região Norte",
+            "descricao": "Utilizar ferramenta de GIS para identificar gargalos de tráfego e oportunidades de rotas mais curtas.",
+            "prioridade": "alta",
+            "prazo": "30 dias",
+            "resultadoEsperado": "Redução da taxa de atraso em 10 pontos percentuais."
+          },
+          {
+            "titulo": "Renegociação de contrato de combustível",
+            "descricao": "Abrir licitação ou negociação direta com fornecedores para obter preço mais baixo.",
+            "prioridade": "media",
+            "prazo": "45 dias",
+            "resultadoEsperado": "Custo médio de combustível reduzido para ~R$ 2.800."
+          },
+          {
+            "titulo": "Treinamento de condução para MT059",
+            "descricao": "Realizar workshop de 8 horas focado em eficiência de tempo e economia de combustível.",
+            "prioridade": "alta",
+            "prazo": "15 dias",
+            "resultadoEsperado": "Diminuição de atrasos nas entregas do motorista em 30%."
+          },
+          {
+            "titulo": "Implementar manutenção preventiva para OLD1A23",
+            "descricao": "Estabelecer calendário de inspeções mensais e troca de peças críticas.",
+            "prioridade": "media",
+            "prazo": "20 dias",
+            "resultadoEsperado": "Redução de falhas mecânicas em 50% nas próximas 3 meses."
+          },
+          {
+            "titulo": "Campanha de incentivo à avaliação positiva",
+            "descricao": "Oferecer desconto de 5% na próxima entrega para clientes que avaliem 4 ou 5.",
+            "prioridade": "baixa",
+            "prazo": "60 dias",
+            "resultadoEsperado": "Elevação da avaliação média para >3,5."
+          },
+          {
+            "titulo": "Análise de ocorrências por região",
+            "descricao": "Detalhar as 2.199 ocorrências para identificar causas recorrentes além das já citadas.",
+            "prioridade": "media",
+            "prazo": "40 dias",
+            "resultadoEsperado": "Plano de ação mais direcionado para as principais causas de atraso."
+          }
+        ],
+        "limitacoes": [
+          "Os dados não apresentam série temporal que permita analisar tendências ao longo do tempo.",
+          "Não há detalhamento de custos por motorista ou por veículo, limitando a análise de desempenho individual.",
+          "As estatísticas são agregadas; não é possível validar correlações específicas entre distância, custo e atraso sem acesso ao dataset completo."
+        ],
+        "serieTemporal": [
+          {
+            "rotulo": "ENT000001",
+            "valor": 1063.1
+          },
+          {
+            "rotulo": "ENT000002",
+            "valor": 315.6
+          },
+          {
+            "rotulo": "ENT000003",
+            "valor": 4217.7
+          },
+          {
+            "rotulo": "ENT000004",
+            "valor": 3290.7
+          },
+          {
+            "rotulo": "ENT000005",
+            "valor": 638.1
+          },
+          {
+            "rotulo": "ENT000006",
+            "valor": 2165.4
+          },
+          {
+            "rotulo": "ENT000007",
+            "valor": 808.7
+          },
+          {
+            "rotulo": "ENT000008",
+            "valor": 295
+          },
+          {
+            "rotulo": "ENT000009",
+            "valor": 3278.1
+          },
+          {
+            "rotulo": "ENT000010",
+            "valor": 2008.2
+          },
+          {
+            "rotulo": "ENT000011",
+            "valor": 817.6
+          },
+          {
+            "rotulo": "ENT000012",
+            "valor": 2139.5
+          },
+          {
+            "rotulo": "ENT000013",
+            "valor": 2355.9
+          },
+          {
+            "rotulo": "ENT000014",
+            "valor": 3295
+          },
+          {
+            "rotulo": "ENT000015",
+            "valor": 3278.6
+          },
+          {
+            "rotulo": "ENT000016",
+            "valor": 3239.4
+          },
+          {
+            "rotulo": "ENT000017",
+            "valor": 3093.6
+          },
+          {
+            "rotulo": "ENT000018",
+            "valor": 3146.6
+          },
+          {
+            "rotulo": "ENT000019",
+            "valor": 3076.8
+          },
+          {
+            "rotulo": "ENT000020",
+            "valor": 2770.9
+          },
+          {
+            "rotulo": "ENT000021",
+            "valor": 308.8
+          },
+          {
+            "rotulo": "ENT000022",
+            "valor": 736.8
+          },
+          {
+            "rotulo": "ENT000023",
+            "valor": 4313.6
+          },
+          {
+            "rotulo": "ENT000024",
+            "valor": 682.4
+          },
+          {
+            "rotulo": "ENT000025",
+            "valor": 757.5
+          },
+          {
+            "rotulo": "ENT000026",
+            "valor": 196.3
+          },
+          {
+            "rotulo": "ENT000027",
+            "valor": 463.6
+          },
+          {
+            "rotulo": "ENT000028",
+            "valor": 622.8
+          },
+          {
+            "rotulo": "ENT000029",
+            "valor": 2896.1
+          },
+          {
+            "rotulo": "ENT000030",
+            "valor": 3377.7
+          },
+          {
+            "rotulo": "ENT000031",
+            "valor": 4296.6
+          },
+          {
+            "rotulo": "ENT000032",
+            "valor": 2073.3
+          },
+          {
+            "rotulo": "ENT000033",
+            "valor": 2744.9
+          },
+          {
+            "rotulo": "ENT000034",
+            "valor": 444.2
+          },
+          {
+            "rotulo": "ENT000035",
+            "valor": 195.2
+          },
+          {
+            "rotulo": "ENT000036",
+            "valor": 776.5
+          },
+          {
+            "rotulo": "ENT000037",
+            "valor": 2805.4
+          },
+          {
+            "rotulo": "ENT000038",
+            "valor": 3525.1
+          },
+          {
+            "rotulo": "ENT000039",
+            "valor": 3378.6
+          },
+          {
+            "rotulo": "ENT000040",
+            "valor": 643.8
+          },
+          {
+            "rotulo": "ENT000041",
+            "valor": 824.6
+          },
+          {
+            "rotulo": "ENT000042",
+            "valor": 1464.2
+          },
+          {
+            "rotulo": "ENT000043",
+            "valor": 4160
+          },
+          {
+            "rotulo": "ENT000044",
+            "valor": 2018.6
+          },
+          {
+            "rotulo": "ENT000045",
+            "valor": 3623.9
+          },
+          {
+            "rotulo": "ENT000046",
+            "valor": 468.6
+          },
+          {
+            "rotulo": "ENT000047",
+            "valor": 312.5
+          },
+          {
+            "rotulo": "ENT000048",
+            "valor": 1379.3
+          },
+          {
+            "rotulo": "ENT000049",
+            "valor": 2800.2
+          },
+          {
+            "rotulo": "ENT000050",
+            "valor": 3702.3
+          },
+          {
+            "rotulo": "ENT000051",
+            "valor": 732.6
+          },
+          {
+            "rotulo": "ENT000052",
+            "valor": 733.1
+          },
+          {
+            "rotulo": "ENT000053",
+            "valor": 770.1
+          },
+          {
+            "rotulo": "ENT000054",
+            "valor": 4099
+          },
+          {
+            "rotulo": "ENT000055",
+            "valor": 1984.9
+          },
+          {
+            "rotulo": "ENT000056",
+            "valor": 930.9
+          },
+          {
+            "rotulo": "ENT000057",
+            "valor": 636.9
+          },
+          {
+            "rotulo": "ENT000058",
+            "valor": 1839.3
+          },
+          {
+            "rotulo": "ENT000059",
+            "valor": 451.9
+          },
+          {
+            "rotulo": "ENT000060",
+            "valor": 774.5
+          }
+        ],
+        "fontes": [
+          "LogiPilot_Planilha_Teste_Operacional.xlsx (Excel)"
         ]
-      }
+      },
+      "id": "kBQveE8rC38"
+    },
+    {
+      "titulo": "teste2",
+      "projetoId": "1",
+      "criadoPorId": "StA4qrKjoqc",
+      "status": "concluida",
+      "criadoEm": "2026-10-06",
+      "serieTemporal": [
+        {
+          "rotulo": "ENT000001",
+          "valor": 1063.1
+        },
+        {
+          "rotulo": "ENT000002",
+          "valor": 315.6
+        },
+        {
+          "rotulo": "ENT000003",
+          "valor": 4217.7
+        },
+        {
+          "rotulo": "ENT000004",
+          "valor": 3290.7
+        },
+        {
+          "rotulo": "ENT000005",
+          "valor": 638.1
+        },
+        {
+          "rotulo": "ENT000006",
+          "valor": 2165.4
+        },
+        {
+          "rotulo": "ENT000007",
+          "valor": 808.7
+        },
+        {
+          "rotulo": "ENT000008",
+          "valor": 295
+        },
+        {
+          "rotulo": "ENT000009",
+          "valor": 3278.1
+        },
+        {
+          "rotulo": "ENT000010",
+          "valor": 2008.2
+        },
+        {
+          "rotulo": "ENT000011",
+          "valor": 817.6
+        },
+        {
+          "rotulo": "ENT000012",
+          "valor": 2139.5
+        },
+        {
+          "rotulo": "ENT000013",
+          "valor": 2355.9
+        },
+        {
+          "rotulo": "ENT000014",
+          "valor": 3295
+        },
+        {
+          "rotulo": "ENT000015",
+          "valor": 3278.6
+        },
+        {
+          "rotulo": "ENT000016",
+          "valor": 3239.4
+        },
+        {
+          "rotulo": "ENT000017",
+          "valor": 3093.6
+        },
+        {
+          "rotulo": "ENT000018",
+          "valor": 3146.6
+        },
+        {
+          "rotulo": "ENT000019",
+          "valor": 3076.8
+        },
+        {
+          "rotulo": "ENT000020",
+          "valor": 2770.9
+        },
+        {
+          "rotulo": "ENT000021",
+          "valor": 308.8
+        },
+        {
+          "rotulo": "ENT000022",
+          "valor": 736.8
+        },
+        {
+          "rotulo": "ENT000023",
+          "valor": 4313.6
+        },
+        {
+          "rotulo": "ENT000024",
+          "valor": 682.4
+        },
+        {
+          "rotulo": "ENT000025",
+          "valor": 757.5
+        },
+        {
+          "rotulo": "ENT000026",
+          "valor": 196.3
+        },
+        {
+          "rotulo": "ENT000027",
+          "valor": 463.6
+        },
+        {
+          "rotulo": "ENT000028",
+          "valor": 622.8
+        },
+        {
+          "rotulo": "ENT000029",
+          "valor": 2896.1
+        },
+        {
+          "rotulo": "ENT000030",
+          "valor": 3377.7
+        },
+        {
+          "rotulo": "ENT000031",
+          "valor": 4296.6
+        },
+        {
+          "rotulo": "ENT000032",
+          "valor": 2073.3
+        },
+        {
+          "rotulo": "ENT000033",
+          "valor": 2744.9
+        },
+        {
+          "rotulo": "ENT000034",
+          "valor": 444.2
+        },
+        {
+          "rotulo": "ENT000035",
+          "valor": 195.2
+        },
+        {
+          "rotulo": "ENT000036",
+          "valor": 776.5
+        },
+        {
+          "rotulo": "ENT000037",
+          "valor": 2805.4
+        },
+        {
+          "rotulo": "ENT000038",
+          "valor": 3525.1
+        },
+        {
+          "rotulo": "ENT000039",
+          "valor": 3378.6
+        },
+        {
+          "rotulo": "ENT000040",
+          "valor": 643.8
+        },
+        {
+          "rotulo": "ENT000041",
+          "valor": 824.6
+        },
+        {
+          "rotulo": "ENT000042",
+          "valor": 1464.2
+        },
+        {
+          "rotulo": "ENT000043",
+          "valor": 4160
+        },
+        {
+          "rotulo": "ENT000044",
+          "valor": 2018.6
+        },
+        {
+          "rotulo": "ENT000045",
+          "valor": 3623.9
+        },
+        {
+          "rotulo": "ENT000046",
+          "valor": 468.6
+        },
+        {
+          "rotulo": "ENT000047",
+          "valor": 312.5
+        },
+        {
+          "rotulo": "ENT000048",
+          "valor": 1379.3
+        },
+        {
+          "rotulo": "ENT000049",
+          "valor": 2800.2
+        },
+        {
+          "rotulo": "ENT000050",
+          "valor": 3702.3
+        },
+        {
+          "rotulo": "ENT000051",
+          "valor": 732.6
+        },
+        {
+          "rotulo": "ENT000052",
+          "valor": 733.1
+        },
+        {
+          "rotulo": "ENT000053",
+          "valor": 770.1
+        },
+        {
+          "rotulo": "ENT000054",
+          "valor": 4099
+        },
+        {
+          "rotulo": "ENT000055",
+          "valor": 1984.9
+        },
+        {
+          "rotulo": "ENT000056",
+          "valor": 930.9
+        },
+        {
+          "rotulo": "ENT000057",
+          "valor": 636.9
+        },
+        {
+          "rotulo": "ENT000058",
+          "valor": 1839.3
+        },
+        {
+          "rotulo": "ENT000059",
+          "valor": 451.9
+        },
+        {
+          "rotulo": "ENT000060",
+          "valor": 774.5
+        }
+      ],
+      "fontes": [
+        "LogiPilot_Planilha_Teste_Operacional.xlsx (Excel)"
+      ],
+      "resultado": {
+        "resumo": {
+          "titulo": "teste2",
+          "visaoGeral": "Os dados mostram uma operação com 5.200 entregas, taxa de atraso geral de 46,5%, custo total de frete de R$3,322,094.22 e avaliação média dos clientes de 3,18. A região Norte apresenta a maior taxa de atraso (61,1%) e custos elevados, enquanto o Sudeste tem melhor desempenho.",
+          "periodo": "não informado",
+          "destaques": [
+            "Taxa de atraso geral acima de 40% (46,5%).",
+            "Região Norte com 61,1% de entregas atrasadas e custo médio de combustível de R$3.234,57.",
+            "Motorista MT059 aparece repetidamente em entregas atrasadas.",
+            "Tempo real médio (43,76h) supera o previsto (33,97h) em 28,8%.",
+            "Avaliação média dos clientes abaixo de 3,5 (3,18)."
+          ]
+        },
+        "indicadores": [
+          {
+            "nome": "Taxa de Atraso Geral",
+            "valor": "0.465",
+            "unidade": "",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Custo Total de Frete",
+            "valor": "3322094.22",
+            "unidade": "R$",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Custo Médio de Combustível",
+            "valor": "2223.55667692308",
+            "unidade": "R$",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Avaliação Média dos Clientes",
+            "valor": "3.17788461538462",
+            "unidade": "",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Média de Dias de Atraso",
+            "valor": "0.36",
+            "unidade": "dias",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          },
+          {
+            "nome": "Diferença Média Tempo Real vs Previsto",
+            "valor": "9.79",
+            "unidade": "horas",
+            "tendencia": "estavel",
+            "situacao": "atencao"
+          }
+        ],
+        "diagnostico": {
+          "scoreSaude": 62,
+          "avaliacaoGeral": "A operação apresenta sinais de alerta críticos, principalmente na alta taxa de atrasos e nos custos elevados nas regiões Norte e Centro-Oeste. A performance dos motoristas e da frota também contribui para a deterioração da saúde operacional.",
+          "fatosObservados": [
+            "Taxa de atraso geral de 46,5% (2.418 entregas atrasadas em 5.200).",
+            "Região Norte tem taxa de atraso de 61,1% e custo médio de combustível de R$3.234,57.",
+            "Motorista MT059 está associado a múltiplas entregas atrasadas.",
+            "Veículo OLD1A23 aparece nas entregas com atrasos e custos de combustível acima da média.",
+            "Tempo real médio (43,76h) supera o previsto (33,97h) em quase 30%."
+          ],
+          "hipoteses": [
+            "Falta de motoristas disponíveis ou alocação inadequada pode estar gerando atrasos, especialmente na região Norte.",
+            "Veículos antigos ou com manutenção deficiente (ex.: OLD1A23) elevam custos de combustível e provocam falhas mecânicas.",
+            "Rotas longas e pouco otimizadas aumentam o tempo real de entrega.",
+            "Processos de planejamento de carga podem não estar considerando variações de peso e distância, impactando custos."
+          ]
+        },
+        "gargalos": [
+          {
+            "titulo": "Alta taxa de atraso na região Norte",
+            "descricao": "61,1% das entregas na região Norte chegam atrasadas, com custos de combustível acima da média.",
+            "severidade": "alta",
+            "evidencia": "Taxa_Atraso_% = 0.611197511664075; Custo_Medio_Combustivel_R$ = 3234.5698600311",
+            "impacto": "Eleva o custo total e reduz a satisfação do cliente."
+          },
+          {
+            "titulo": "Desempenho abaixo da média do motorista MT059",
+            "descricao": "Motorista aparece em várias entregas atrasadas e em veículos com alta manutenção.",
+            "severidade": "media",
+            "evidencia": "Entregas com MT059 nas linhas 1,3,6 apresentam atrasos de 0.1 a 0.5 dias.",
+            "impacto": "Contribui para a taxa geral de atrasos."
+          },
+          {
+            "titulo": "Veículo OLD1A23 com alta manutenção",
+            "descricao": "Veículo usado em entregas atrasadas apresenta custos de combustível acima da média.",
+            "severidade": "media",
+            "evidencia": "Custo_Combustivel_R$ = 1109.11 (linha ENT000001) e 4372.77 (linha ENT000003).",
+            "impacto": "Aumenta o custo operacional e risco de falhas."
+          },
+          {
+            "titulo": "Tempo real acima do previsto",
+            "descricao": "Média de tempo real (43,76h) supera a prevista (33,97h) em 28,8%.",
+            "severidade": "alta",
+            "evidencia": "Tempo_Previsto_H média 33.97; Tempo_Real_H média 43.76.",
+            "impacto": "Reduz a capacidade de entrega e aumenta atrasos."
+          },
+          {
+            "titulo": "Elevado número de ocorrências",
+            "descricao": "2.199 ocorrências registradas, com destaque para falta de motorista e pane mecânica.",
+            "severidade": "media",
+            "evidencia": "Ocorrencias total = 2199; ocorrências específicas citadas nas linhas de exemplo.",
+            "impacto": "Afeta a confiabilidade da operação."
+          }
+        ],
+        "oportunidades": [
+          {
+            "titulo": "Revisão de alocação de motoristas na região Norte",
+            "descricao": "Redistribuir motoristas e contratar reforço temporário para reduzir faltas.",
+            "impactoPotencial": "Redução da taxa de atraso em até 20 pontos percentuais.",
+            "esforco": "medio"
+          },
+          {
+            "titulo": "Substituição ou manutenção preventiva do veículo OLD1A23",
+            "descricao": "Realizar manutenção preventiva ou substituir por frota mais eficiente.",
+            "impactoPotencial": "Diminuição de custos de combustível em ~15% e redução de atrasos mecânicos.",
+            "esforco": "alto"
+          },
+          {
+            "titulo": "Otimização de rotas com software de roteirização",
+            "descricao": "Implementar algoritmo que considere distância, peso e restrições de tráfego.",
+            "impactoPotencial": "Redução média de tempo real em 10-15%.",
+            "esforco": "baixo"
+          },
+          {
+            "titulo": "Programa de treinamento de motoristas",
+            "descricao": "Capacitar motoristas em práticas de condução econômica e cumprimento de prazos.",
+            "impactoPotencial": "Melhoria da avaliação média dos clientes e redução de consumo de combustível.",
+            "esforco": "baixo"
+          },
+          {
+            "titulo": "Negociação de tarifas de pedágio e parcerias logísticas",
+            "descricao": "Buscar descontos ou acordos de compartilhamento de custos de pedágio.",
+            "impactoPotencial": "Redução de custos operacionais em até 5%.",
+            "esforco": "medio"
+          }
+        ],
+        "planoDeAcao": [
+          {
+            "titulo": "Mapear demanda e disponibilidade de motoristas na região Norte",
+            "descricao": "Analisar histórico de faltas e criar pool de motoristas reserva.",
+            "prioridade": "alta",
+            "prazo": "30 dias",
+            "resultadoEsperado": "Cobertura de 95% das entregas sem falta de motorista."
+          },
+          {
+            "titulo": "Auditar o histórico de manutenção do veículo OLD1A23",
+            "descricao": "Coletar dados de manutenção e decidir por reparo ou substituição.",
+            "prioridade": "alta",
+            "prazo": "45 dias",
+            "resultadoEsperado": "Redução de custos de combustível em 12% e eliminação de panes mecânicas."
+          },
+          {
+            "titulo": "Implementar ferramenta de roteirização inteligente",
+            "descricao": "Integrar software que otimize rotas diárias considerando peso, distância e restrições.",
+            "prioridade": "media",
+            "prazo": "60 dias",
+            "resultadoEsperado": "Diminuição do tempo real médio em 10%."
+          },
+          {
+            "titulo": "Realizar workshop de boas práticas para motoristas",
+            "descricao": "Treinamento focado em condução econômica, cumprimento de prazos e atendimento ao cliente.",
+            "prioridade": "media",
+            "prazo": "20 dias",
+            "resultadoEsperado": "Aumento da avaliação média dos clientes para >3,5."
+          },
+          {
+            "titulo": "Negociar tarifas de pedágio com concessionárias",
+            "descricao": "Abrir negociação para descontos ou contratos de volume.",
+            "prioridade": "baixa",
+            "prazo": "90 dias",
+            "resultadoEsperado": "Redução de custos de pedágio em até 5%."
+          },
+          {
+            "titulo": "Monitorar indicadores de tempo previsto vs real em tempo real",
+            "descricao": "Criar dashboard que alerte desvios >15% para ação corretiva imediata.",
+            "prioridade": "alta",
+            "prazo": "15 dias",
+            "resultadoEsperado": "Detecção precoce de atrasos e ação corretiva em 80% dos casos."
+          },
+          {
+            "titulo": "Revisar política de avaliação de clientes",
+            "descricao": "Implementar pesquisa pós-entrega mais detalhada para identificar causas de notas baixas.",
+            "prioridade": "baixa",
+            "prazo": "40 dias",
+            "resultadoEsperado": "Identificação de 3 principais causas de avaliações <3."
+          },
+          {
+            "titulo": "Analisar e reduzir ocorrências de falta de motorista",
+            "descricao": "Estudar padrões de ausência e criar incentivos de presença.",
+            "prioridade": "media",
+            "prazo": "50 dias",
+            "resultadoEsperado": "Queda de ocorrências de falta de motorista em 30%."
+          }
+        ],
+        "limitacoes": [
+          "Os dados não apresentam divisão temporal (mensal, trimestral), impedindo análise de tendências ao longo do tempo.",
+          "Detalhes de custos por região (ex.: combustível, pedágio) não estão discriminados além da média geral.",
+          "Informações sobre a frota completa (idade, consumo padrão) não foram fornecidas.",
+          "Não há dados de capacidade de armazém ou tempo de carregamento, que podem influenciar atrasos."
+        ],
+        "serieTemporal": [
+          {
+            "rotulo": "ENT000001",
+            "valor": 1063.1
+          },
+          {
+            "rotulo": "ENT000002",
+            "valor": 315.6
+          },
+          {
+            "rotulo": "ENT000003",
+            "valor": 4217.7
+          },
+          {
+            "rotulo": "ENT000004",
+            "valor": 3290.7
+          },
+          {
+            "rotulo": "ENT000005",
+            "valor": 638.1
+          },
+          {
+            "rotulo": "ENT000006",
+            "valor": 2165.4
+          },
+          {
+            "rotulo": "ENT000007",
+            "valor": 808.7
+          },
+          {
+            "rotulo": "ENT000008",
+            "valor": 295
+          },
+          {
+            "rotulo": "ENT000009",
+            "valor": 3278.1
+          },
+          {
+            "rotulo": "ENT000010",
+            "valor": 2008.2
+          },
+          {
+            "rotulo": "ENT000011",
+            "valor": 817.6
+          },
+          {
+            "rotulo": "ENT000012",
+            "valor": 2139.5
+          },
+          {
+            "rotulo": "ENT000013",
+            "valor": 2355.9
+          },
+          {
+            "rotulo": "ENT000014",
+            "valor": 3295
+          },
+          {
+            "rotulo": "ENT000015",
+            "valor": 3278.6
+          },
+          {
+            "rotulo": "ENT000016",
+            "valor": 3239.4
+          },
+          {
+            "rotulo": "ENT000017",
+            "valor": 3093.6
+          },
+          {
+            "rotulo": "ENT000018",
+            "valor": 3146.6
+          },
+          {
+            "rotulo": "ENT000019",
+            "valor": 3076.8
+          },
+          {
+            "rotulo": "ENT000020",
+            "valor": 2770.9
+          },
+          {
+            "rotulo": "ENT000021",
+            "valor": 308.8
+          },
+          {
+            "rotulo": "ENT000022",
+            "valor": 736.8
+          },
+          {
+            "rotulo": "ENT000023",
+            "valor": 4313.6
+          },
+          {
+            "rotulo": "ENT000024",
+            "valor": 682.4
+          },
+          {
+            "rotulo": "ENT000025",
+            "valor": 757.5
+          },
+          {
+            "rotulo": "ENT000026",
+            "valor": 196.3
+          },
+          {
+            "rotulo": "ENT000027",
+            "valor": 463.6
+          },
+          {
+            "rotulo": "ENT000028",
+            "valor": 622.8
+          },
+          {
+            "rotulo": "ENT000029",
+            "valor": 2896.1
+          },
+          {
+            "rotulo": "ENT000030",
+            "valor": 3377.7
+          },
+          {
+            "rotulo": "ENT000031",
+            "valor": 4296.6
+          },
+          {
+            "rotulo": "ENT000032",
+            "valor": 2073.3
+          },
+          {
+            "rotulo": "ENT000033",
+            "valor": 2744.9
+          },
+          {
+            "rotulo": "ENT000034",
+            "valor": 444.2
+          },
+          {
+            "rotulo": "ENT000035",
+            "valor": 195.2
+          },
+          {
+            "rotulo": "ENT000036",
+            "valor": 776.5
+          },
+          {
+            "rotulo": "ENT000037",
+            "valor": 2805.4
+          },
+          {
+            "rotulo": "ENT000038",
+            "valor": 3525.1
+          },
+          {
+            "rotulo": "ENT000039",
+            "valor": 3378.6
+          },
+          {
+            "rotulo": "ENT000040",
+            "valor": 643.8
+          },
+          {
+            "rotulo": "ENT000041",
+            "valor": 824.6
+          },
+          {
+            "rotulo": "ENT000042",
+            "valor": 1464.2
+          },
+          {
+            "rotulo": "ENT000043",
+            "valor": 4160
+          },
+          {
+            "rotulo": "ENT000044",
+            "valor": 2018.6
+          },
+          {
+            "rotulo": "ENT000045",
+            "valor": 3623.9
+          },
+          {
+            "rotulo": "ENT000046",
+            "valor": 468.6
+          },
+          {
+            "rotulo": "ENT000047",
+            "valor": 312.5
+          },
+          {
+            "rotulo": "ENT000048",
+            "valor": 1379.3
+          },
+          {
+            "rotulo": "ENT000049",
+            "valor": 2800.2
+          },
+          {
+            "rotulo": "ENT000050",
+            "valor": 3702.3
+          },
+          {
+            "rotulo": "ENT000051",
+            "valor": 732.6
+          },
+          {
+            "rotulo": "ENT000052",
+            "valor": 733.1
+          },
+          {
+            "rotulo": "ENT000053",
+            "valor": 770.1
+          },
+          {
+            "rotulo": "ENT000054",
+            "valor": 4099
+          },
+          {
+            "rotulo": "ENT000055",
+            "valor": 1984.9
+          },
+          {
+            "rotulo": "ENT000056",
+            "valor": 930.9
+          },
+          {
+            "rotulo": "ENT000057",
+            "valor": 636.9
+          },
+          {
+            "rotulo": "ENT000058",
+            "valor": 1839.3
+          },
+          {
+            "rotulo": "ENT000059",
+            "valor": 451.9
+          },
+          {
+            "rotulo": "ENT000060",
+            "valor": 774.5
+          }
+        ],
+        "fontes": [
+          "LogiPilot_Planilha_Teste_Operacional.xlsx (Excel)"
+        ]
+      },
+      "id": "R9FTjOA_WEY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -5,6 +5,7 @@ import { getUsuarioLogado } from '../../services/sessao'
 import SidebarGestor from '../../components/SidebarGestor'
 import SidebarOperador from '../../components/SidebarOperador'
 import CredentialUser from '../../components/CredentialUser'
+import { formatarData } from '../../services/formatadores'
 
 const badgeStatus = {
   concluida: 'bg-success',
@@ -15,27 +16,40 @@ const badgeStatus = {
 const ListarAnalise = () => {
   const usuario = getUsuarioLogado()
   const [analises, setAnalises] = useState([])
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
 
   useEffect(() => {
     api
       .get('/analises')
-      .then((response) => setAnalises(response.data))
-      .catch((error) => console.error('Erro ao buscar análises.', error))
-  }, [])
+      .then((response) => {
+        const dados = usuario?.papel === 'gestor'
+          ? response.data
+          : response.data.filter((analise) => String(analise.criadoPorId) === String(usuario?.id))
+        setAnalises(dados)
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar análises.', error)
+        setErro('Não foi possível carregar o histórico de análises.')
+      })
+      .finally(() => setCarregando(false))
+  }, [usuario?.id, usuario?.papel])
 
   const Sidebar = usuario?.papel === 'gestor' ? SidebarGestor : SidebarOperador
 
   return (
-    <div className="d-flex flex-column flex-md-row">
+    <div className="app-shell d-flex flex-column flex-md-row">
       <Sidebar />
 
-      <div className="flex-grow-1 p-4">
+      <main className="app-main flex-grow-1">
         <CredentialUser title="Histórico de Análises" />
 
-        <div className="card shadow-sm">
+        <div className="content-card card shadow-sm">
           <div className="card-body">
+            {erro && <div className="alert alert-warning" role="alert">{erro}</div>}
+            {carregando && <p className="text-muted mb-0">Carregando análises...</p>}
             {analises.length > 0 && (
-              <table className="table table-hover align-middle">
+              <div className="table-responsive"><table className="table table-hover align-middle mb-0">
                 <thead className="table-success">
                   <tr>
                     <th>Título</th>
@@ -48,10 +62,10 @@ const ListarAnalise = () => {
                   {analises.map((analise) => (
                     <tr key={analise.id}>
                       <td>
-                        <i className="fas fa-file-csv me-2 text-muted"></i>
+                        <i className="fas fa-file-lines me-2 text-muted"></i>
                         {analise.titulo}
                       </td>
-                      <td>{analise.criadoEm}</td>
+                      <td>{formatarData(analise.criadoEm)}</td>
                       <td>
                         <span
                           className={`badge ${badgeStatus[analise.status] || 'bg-secondary'} text-capitalize`}
@@ -67,13 +81,13 @@ const ListarAnalise = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             )}
 
-            {analises.length === 0 && <p className="text-muted mb-0">Nenhuma análise encontrada.</p>}
+            {!carregando && !erro && analises.length === 0 && <p className="text-muted mb-0">Nenhuma análise encontrada.</p>}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }

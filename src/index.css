@@ -1,4 +1,142 @@
+/* Identidade visual do LogiPilot (mesmas cores do site oficial). */
+:root {
+  --azul-escuro: #0a1628;
+  --azul-profundo: #020408;
+  --ciano: #06b6d4;
+  --ciano-escuro: #0891b2;
+  --ciano-claro: #38bdf8;
+  --azul: #3b82f6;
+  --tinta: #0f172a;
+  --tinta-media: #475569;
+  --tinta-clara: #94a3b8;
+  --borda: #e2e8f0;
+  --fundo: #f8fafc;
+  --sucesso: #10b981;
+  --alerta: #f59e0b;
+  --erro: #ef4444;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  color: var(--tinta);
+  background: var(--fundo);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  background-color: #f4f6f9;
+  min-width: 320px;
+  background-color: var(--fundo);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(6, 182, 212, 0.35);
+  outline-offset: 2px;
+}
+
+/* Bootstrap usa variáveis próprias; aqui trocamos as cores dos componentes
+   que o projeto mais utiliza para as cores do LogiPilot. */
+.btn-primary {
+  --bs-btn-bg: var(--ciano);
+  --bs-btn-border-color: var(--ciano);
+  --bs-btn-hover-bg: var(--ciano-escuro);
+  --bs-btn-hover-border-color: var(--ciano-escuro);
+  --bs-btn-active-bg: var(--ciano-escuro);
+  --bs-btn-active-border-color: var(--ciano-escuro);
+  --bs-btn-disabled-bg: var(--ciano);
+  --bs-btn-disabled-border-color: var(--ciano);
+  font-weight: 600;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--ciano-escuro);
+  --bs-btn-border-color: #a5e8f5;
+  --bs-btn-hover-bg: var(--ciano-escuro);
+  --bs-btn-hover-border-color: var(--ciano-escuro);
+  --bs-btn-active-bg: var(--ciano-escuro);
+  --bs-btn-active-border-color: var(--ciano-escuro);
+  font-weight: 600;
+}
+
+.btn-success {
+  --bs-btn-bg: var(--sucesso);
+  --bs-btn-border-color: var(--sucesso);
+  --bs-btn-hover-bg: #0d9268;
+  --bs-btn-hover-border-color: #0d9268;
+  font-weight: 600;
+}
+
+.badge.bg-success { background-color: var(--sucesso) !important; }
+.badge.bg-warning { background-color: var(--alerta) !important; }
+.badge.bg-danger { background-color: var(--erro) !important; }
+.badge.bg-primary { background-color: var(--ciano) !important; }
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ciano-claro);
+  box-shadow: 0 0 0 0.2rem rgba(6, 182, 212, 0.15);
+}
+
+.table-success {
+  --bs-table-bg: #ecfeff;
+  --bs-table-color: var(--tinta);
+}
+
+.nav-tabs .nav-link {
+  color: var(--tinta-media);
+  font-weight: 600;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--ciano-escuro);
+  border-bottom-color: #fff;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-main {
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.content-card {
+  border: 1px solid var(--borda);
+  border-radius: 1rem;
+}
+
+.card {
+  border-color: var(--borda);
+}
+
+.page-form {
+  max-width: 34rem;
+}
+
+.table-responsive {
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 767.98px) {
+  .app-main {
+    padding: 1rem;
+  }
 }

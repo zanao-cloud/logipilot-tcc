@@ -1,0 +1,100 @@
+.grafico {
+  margin: 0;
+}
+
+.titulo {
+  margin-bottom: 0.75rem;
+  color: #0f172a;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.area {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.eixoY {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 11rem;
+  padding-bottom: 1px;
+  color: #94a3b8;
+  font-size: 0.68rem;
+  text-align: right;
+}
+
+.barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  height: 11rem;
+  padding: 0 0.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  border-left: 1px solid #e2e8f0;
+  background: repeating-linear-gradient(to bottom, #f1f5f9 0 1px, transparent 1px 2.75rem);
+}
+
+.coluna {
+  display: flex;
+  align-items: flex-end;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+.barra {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background-color: #06b6d4;
+}
+
+.previsto {
+  background-color: #a5e8f5;
+}
+
+.eixoX {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  padding: 0 0.25rem 0 2.85rem;
+}
+
+.rotulo {
+  min-width: 0;
+  overflow: hidden;
+  color: #94a3b8;
+  font-size: 0.65rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legenda {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.85rem 0 0;
+  color: #475569;
+  font-size: 0.75rem;
+}
+
+.amostra {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 2px;
+  background-color: #06b6d4;
+}
+
+.amostra:not(:first-child) {
+  margin-left: 0.6rem;
+}
+
+.amostraPrevista {
+  background-color: #a5e8f5;
+}

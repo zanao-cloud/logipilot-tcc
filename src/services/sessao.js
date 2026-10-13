@@ -6,7 +6,16 @@ export const salvarUsuarioLogado = (usuario) => {
 
 export const getUsuarioLogado = () => {
   const dados = localStorage.getItem(CHAVE)
-  return dados ? JSON.parse(dados) : null
+
+  if (!dados) return null
+
+  try {
+    return JSON.parse(dados)
+  } catch {
+    // Uma sessão corrompida não deve impedir o carregamento da aplicação.
+    localStorage.removeItem(CHAVE)
+    return null
+  }
 }
 
 export const logout = () => {

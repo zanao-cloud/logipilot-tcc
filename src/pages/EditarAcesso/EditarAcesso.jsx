@@ -14,12 +14,19 @@ const EditarAcesso = () => {
     telefone: '',
     placa: '',
   })
+  const [carregando, setCarregando] = useState(true)
+  const [enviando, setEnviando] = useState(false)
+  const [erro, setErro] = useState('')
 
   useEffect(() => {
     api
       .get(`/usuarios/${id}`)
       .then((response) => setAcesso(response.data))
-      .catch((error) => console.error('Erro ao buscar o acesso.', error))
+      .catch((error) => {
+        console.error('Erro ao buscar o acesso.', error)
+        setErro('Não foi possível carregar o acesso solicitado.')
+      })
+      .finally(() => setCarregando(false))
   }, [id])
 
   const handleChange = (e) => {
@@ -30,24 +37,39 @@ const EditarAcesso = () => {
   const atualizarAcesso = async (e) => {
     e.preventDefault()
 
+    setEnviando(true)
+    setErro('')
     try {
-      await api.put(`/usuarios/${id}`, acesso)
-      alert('Acesso atualizado com sucesso!')
+      const dadosAtualizados = {
+        ...acesso,
+        nome: acesso.nome.trim(),
+        email: acesso.email.trim().toLowerCase(),
+        telefone: acesso.telefone.trim(),
+        ...(acesso.papel === 'motorista' ? { placa: acesso.placa?.trim().toUpperCase() } : { placa: '' }),
+      }
+      const existente = await api.get('/usuarios', { params: { email: dadosAtualizados.email } })
+      if (existente.data.some((usuario) => String(usuario.id) !== String(id))) {
+        setErro('Já existe outro acesso cadastrado com este e-mail.')
+        return
+      }
+      await api.put(`/usuarios/${id}`, dadosAtualizados)
       navigate('/dashboard/acessos')
     } catch (error) {
       console.error('Não foi possível atualizar o acesso.', error)
-      alert('Não foi possível atualizar o acesso.')
+      setErro('Não foi possível atualizar o acesso. Tente novamente.')
+    } finally {
+      setEnviando(false)
     }
   }
 
   return (
-    <div className="d-flex flex-column flex-md-row">
+    <div className="app-shell d-flex flex-column flex-md-row">
       <SidebarGestor />
 
-      <div className="flex-grow-1 p-4">
+      <main className="app-main flex-grow-1">
         <CredentialUser title="Edição de Acesso" />
 
-        <form className="card shadow-sm p-4" style={{ maxWidth: 480 }} onSubmit={atualizarAcesso}>
+        {carregando ? <p className="text-muted">Carregando acesso...</p> : !acesso.id && erro ? <div className="alert alert-danger" role="alert">{erro}</div> : <form className="content-card page-form card shadow-sm p-4" onSubmit={atualizarAcesso}>
           <div className="mb-3">
             <label className="form-label">Nome</label>
             <input className="form-control" name="nome" value={acesso.nome} onChange={handleChange} required />
@@ -97,11 +119,12 @@ const EditarAcesso = () => {
             </div>
           )}
 
-          <button type="submit" className="btn btn-primary w-100">
-            Salvar alterações
+          {erro && <div className="alert alert-danger py-2" role="alert">{erro}</div>}
+          <button type="submit" className="btn btn-primary w-100" disabled={enviando}>
+            {enviando ? 'Salvando...' : 'Salvar alterações'}
           </button>
-        </form>
-      </div>
+        </form>}
+      </main>
     </div>
   )
 }

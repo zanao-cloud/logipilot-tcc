@@ -1,14 +1,18 @@
 .pagina {
   min-height: 100vh;
-  background-color: #f4f6f9;
+  background-color: var(--fundo);
+  padding-bottom: 2rem;
 }
 
 .cabecalho {
-  background-color: #0a1628;
+  background-color: var(--azul-escuro);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
   padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
 .logo {
@@ -16,12 +20,255 @@
   background-color: #fff;
   border-radius: 6px;
   padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.identificacao {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  margin-left: auto;
+  text-align: right;
+  min-width: 0;
+}
+
+.nome {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.placa {
+  color: var(--tinta-clara);
+  font-size: 0.75rem;
+}
+
+.conteudo {
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 1.75rem);
+}
+
+.saudacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+/* KPIs calculados a partir das entregas registradas no dia. */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .kpi {
   background-color: #fff;
-  border-radius: 8px;
-  padding: 12px;
+  border: 1px solid var(--borda);
+  border-radius: 0.875rem;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.kpiValor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--tinta);
+}
+
+.kpiValor small {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--tinta-clara);
+}
+
+.kpiRotulo {
+  font-size: 0.75rem;
+  color: var(--tinta-media);
+}
+
+.progresso {
+  background-color: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 0.875rem;
+  padding: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.proxima {
+  background: linear-gradient(135deg, #ecfeff, #fff);
+  border: 1px solid #a5e8f5;
+  border-radius: 0.875rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.rota {
+  background-color: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: 0.875rem;
+  padding: 0.875rem;
+  margin-bottom: 1.25rem;
+  color: var(--tinta);
+}
+
+.vazio {
+  background-color: #fff;
+  border: 1px dashed var(--borda);
+  border-radius: 1rem;
+  padding: 2.5rem 1.5rem;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.vazio i {
+  font-size: 2rem;
+  color: var(--tinta-clara);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.entrega {
+  background-color: #fff;
+  border: 1px solid var(--borda);
+  border-radius: 0.875rem;
+  padding: 1rem;
+}
+
+.entregaConcluida {
+  background-color: #fafafa;
+}
+
+.linhaTopo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.ordem {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #ecfeff;
+  color: var(--ciano-escuro);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ordemFeita {
+  background-color: #dcfce7;
+  color: #0d9268;
+}
+
+.instrucao {
+  font-size: 0.8125rem;
+  color: var(--tinta-media);
+  margin-top: 0.35rem;
+}
+
+.observacao {
+  font-size: 0.8125rem;
+  color: var(--ciano-escuro);
+  margin-top: 0.25rem;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-left: 2.75rem;
+}
+
+.registro {
+  margin-top: 0.875rem;
+  margin-left: 2.75rem;
+  padding: 0.875rem;
+  background-color: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 0.75rem;
+}
+
+.desfechos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.desfecho {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--borda);
+  background-color: #fff;
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.desfecho input {
+  margin-right: 0.5rem;
+  accent-color: var(--ciano-escuro);
+}
+
+.desfechoAtivo {
+  border-color: var(--ciano);
+  background-color: #ecfeff;
+  font-weight: 600;
+}
+
+@media (max-width: 767.98px) {
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .saudacao button {
+    width: 100%;
+  }
+
+  .desfechos {
+    grid-template-columns: 1fr;
+  }
+
+  .acoes,
+  .registro {
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+  .acoes .btn {
+    flex: 1 1 auto;
+  }
+
+  .proxima a {
+    width: 100%;
+  }
 }

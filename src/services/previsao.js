@@ -16,19 +16,28 @@ const calcularMediaMovel = (serie, janela = 3) => {
   return ultimos.reduce((soma, valor) => soma + valor, 0) / ultimos.length
 }
 
+// A série chega como [{ rotulo, valor }], mas aceitamos também uma lista
+// simples de números para não quebrar análises salvas antes.
+const extrairValores = (serie) => (
+  (serie || []).map((ponto) => (typeof ponto === 'number' ? ponto : ponto?.valor))
+    .filter((valor) => Number.isFinite(valor))
+)
+
 // Previsão simples (sem IA): mistura regressão linear com média móvel,
 // igual em espírito ao motor de previsão do LogiPilot original.
 export const preverTendencia = (serie, quantidadePeriodos = 3) => {
-  if (!serie || serie.length < 2) {
+  const valores = extrairValores(serie)
+
+  if (valores.length < 2) {
     return { metodo: 'indisponível', tendencia: 'estavel', valoresPrevistos: [] }
   }
 
-  const { inclinacao, intercepto } = calcularRegressaoLinear(serie)
-  const mediaMovelAtual = calcularMediaMovel(serie)
+  const { inclinacao, intercepto } = calcularRegressaoLinear(valores)
+  const mediaMovelAtual = calcularMediaMovel(valores)
 
   const valoresPrevistos = []
   for (let i = 0; i < quantidadePeriodos; i++) {
-    const x = serie.length + i
+    const x = valores.length + i
     const valorRegressao = intercepto + inclinacao * x
     const valorPrevisto = (valorRegressao + mediaMovelAtual) / 2
     valoresPrevistos.push(Number(valorPrevisto.toFixed(1)))

@@ -1,6 +1,63 @@
 .indicador {
-  background-color: #f8fafc;
-  border-radius: 8px;
-  padding: 12px;
   height: 100%;
+  padding: 0.85rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.65rem;
+  background: #f8fafc;
+}
+
+.score {
+  display: grid;
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  place-content: center;
+  justify-items: center;
+  border: 4px solid #e2e8f0;
+  border-radius: 50%;
+}
+
+.score strong {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.score small {
+  color: #94a3b8;
+  font-size: 0.65rem;
+}
+
+.conversa {
+  display: grid;
+  gap: 0.6rem;
+  min-height: 7rem;
+  max-height: 24rem;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 0.85rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.65rem;
+  background: #f8fafc;
+}
+
+.mensagem {
+  max-width: 85%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.doUsuario {
+  justify-self: end;
+  background: #06b6d4;
+  color: #fff;
+}
+
+.daIa {
+  justify-self: start;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #0f172a;
 }

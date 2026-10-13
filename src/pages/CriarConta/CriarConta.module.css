@@ -1,0 +1,40 @@
+.pagina {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4.5rem 1.25rem 2rem;
+  background-color: #0a1628;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  border: 0;
+  border-radius: 12px;
+}
+
+.logo {
+  height: 44px;
+}
+
+.voltar {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.voltar:hover {
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .card {
+    max-width: none;
+  }
+}

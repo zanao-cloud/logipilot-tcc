@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
+import { gerarHash } from '../../services/senha'
 import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 
@@ -11,6 +12,8 @@ const NovoAcesso = () => {
   const [papel, setPapel] = useState('operador')
   const [telefone, setTelefone] = useState('')
   const [placa, setPlaca] = useState('')
+  const [enviando, setEnviando] = useState(false)
+  const [erro, setErro] = useState('')
   const navigate = useNavigate()
 
   const escolherPapel = (e) => {
@@ -19,34 +22,50 @@ const NovoAcesso = () => {
 
   const enviarAcesso = async (e) => {
     e.preventDefault()
+    setErro('')
 
-    const acesso = {
-      nome,
-      email,
-      senha,
-      papel,
-      telefone,
-      ...(papel === 'motorista' ? { placa } : {}),
+    if (senha.length < 6) {
+      setErro('A senha precisa ter pelo menos 6 caracteres.')
+      return
     }
 
+    setEnviando(true)
+
     try {
-      const response = await api.post('/usuarios', acesso)
-      alert(`Acesso de ${response.data.nome} cadastrado com sucesso!`)
+      const acesso = {
+        nome: nome.trim(),
+        email: email.trim().toLowerCase(),
+        // No db.json fica apenas o hash da senha, nunca o texto digitado.
+        senha: await gerarHash(senha),
+        papel,
+        telefone: telefone.trim(),
+        ...(papel === 'motorista' ? { placa: placa.trim().toUpperCase() } : {}),
+      }
+
+      const existente = await api.get('/usuarios', { params: { email: acesso.email } })
+      if (existente.data.length > 0) {
+        setErro('Já existe um acesso cadastrado com este e-mail.')
+        return
+      }
+
+      await api.post('/usuarios', acesso)
       navigate('/dashboard/acessos')
     } catch (error) {
       console.error('Não foi possível salvar o acesso.', error)
-      alert('Não foi possível salvar o acesso.')
+      setErro('Não foi possível salvar o acesso. Tente novamente.')
+    } finally {
+      setEnviando(false)
     }
   }
 
   return (
-    <div className="d-flex flex-column flex-md-row">
+    <div className="app-shell d-flex flex-column flex-md-row">
       <SidebarGestor />
 
-      <div className="flex-grow-1 p-4">
+      <main className="app-main flex-grow-1">
         <CredentialUser title="Cadastro de Acesso" />
 
-        <form className="card shadow-sm p-4" style={{ maxWidth: 480 }} onSubmit={enviarAcesso}>
+        <form className="content-card page-form card shadow-sm p-4" onSubmit={enviarAcesso}>
           <div className="mb-3">
             <label className="form-label">Nome</label>
             <input className="form-control" value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -70,8 +89,10 @@ const NovoAcesso = () => {
               className="form-control"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
+              minLength={6}
               required
             />
+            <div className="form-text">Mínimo de 6 caracteres.</div>
           </div>
 
           <div className="mb-3">
@@ -99,11 +120,13 @@ const NovoAcesso = () => {
             </div>
           )}
 
-          <button type="submit" className="btn btn-primary w-100">
-            Salvar
+          {erro && <div className="alert alert-danger py-2" role="alert">{erro}</div>}
+
+          <button type="submit" className="btn btn-primary w-100" disabled={enviando}>
+            {enviando ? 'Salvando...' : 'Salvar'}
           </button>
         </form>
-      </div>
+      </main>
     </div>
   )
 }

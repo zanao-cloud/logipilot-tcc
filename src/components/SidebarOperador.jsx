@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { getUsuarioLogado, logout } from '../services/sessao'
 import styles from './SidebarOperador.module.css'
 
@@ -18,20 +18,23 @@ const SidebarOperador = () => {
       </div>
 
       <nav className="nav flex-column flex-grow-1">
-        <Link to="/operador" className={`nav-link ${styles.item}`}>
+        <NavLink to="/operador" end className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
           <i className="fas fa-home me-2"></i>Painel
-        </Link>
-        <Link to="/analises/nova" className={`nav-link ${styles.item}`}>
+        </NavLink>
+        <NavLink to="/operador/motoristas" className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
+          <i className="fas fa-truck me-2"></i>Motoristas
+        </NavLink>
+        <NavLink to="/analises/nova" className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
           <i className="fas fa-plus me-2"></i>Nova análise
-        </Link>
-        <Link to="/analises" className={`nav-link ${styles.item}`}>
+        </NavLink>
+        <NavLink to="/analises" end className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
           <i className="fas fa-history me-2"></i>Histórico
-        </Link>
+        </NavLink>
       </nav>
 
       <div className={styles.usuario}>
         <p className="mb-2 small">{usuario ? usuario.nome : ''}</p>
-        <button className="btn btn-outline-light btn-sm w-100" onClick={sair}>
+        <button type="button" className="btn btn-outline-light btn-sm w-100" onClick={sair}>
           <i className="fas fa-sign-out-alt me-1"></i>Sair
         </button>
       </div>

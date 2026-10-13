@@ -1,7 +1,8 @@
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background-color: #17301c;
+  background-color: #0a1628;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -17,10 +18,16 @@
 }
 
 .item {
-  color: #d4e8d8;
+  color: #cbd5e1;
   padding: 10px 12px;
   border-radius: 8px;
   margin-bottom: 4px;
+}
+
+.ativo {
+  background-color: rgba(6, 182, 212, 0.18);
+  color: #fff;
+  font-weight: 700;
 }
 
 .item:hover {
@@ -38,5 +45,47 @@
   .sidebar {
     width: 100%;
     min-height: auto;
+    padding: 0.875rem 1rem;
+  }
+
+  .sidebar > :first-child {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .logo {
+    height: 28px;
+  }
+
+  .sidebar nav {
+    flex-direction: row !important;
+    flex-grow: 0 !important;
+    overflow-x: auto;
+    gap: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .item {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+
+  .usuario {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .usuario p {
+    margin: 0 !important;
+  }
+
+  .usuario button {
+    width: auto !important;
   }
 }

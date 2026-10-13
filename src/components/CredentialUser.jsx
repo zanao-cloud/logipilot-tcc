@@ -1,39 +1,19 @@
 import { getUsuarioLogado } from '../services/sessao'
+import styles from './CredentialUser.module.css'
 
 const CredentialUser = ({ title }) => {
   const usuario = getUsuarioLogado()
 
-  const customStyles = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: '8px',
-    marginBottom: '24px',
-  }
-
-  const pageInfo = {
-    backgroundColor: '#fafdf4',
-    color: '#0a1628',
-    fontWeight: 'bold',
-    padding: '10px 16px',
-    borderRadius: '8px',
-  }
-
-  const userInfo = {
-    backgroundColor: '#fafdf4',
-    color: '#0a1628',
-    padding: '10px 16px',
-    borderRadius: '8px',
-  }
-
   return (
-    <div style={customStyles}>
-      <div style={pageInfo}>{title}</div>
-      <div style={userInfo}>
-        Usuário: {usuario ? usuario.nome : '—'} | Função: {usuario ? usuario.papel : '—'}
+    <header className={styles.cabecalho}>
+      <div className={styles.titulo}>{title}</div>
+      <div className={styles.usuario}>
+        <span className={styles.rotulo}>Usuário</span>
+        <span>{usuario ? usuario.nome : '—'}</span>
+        <span className={styles.separador} aria-hidden="true">•</span>
+        <span className="text-capitalize">{usuario ? usuario.papel : '—'}</span>
       </div>
-    </div>
+    </header>
   )
 }
 
