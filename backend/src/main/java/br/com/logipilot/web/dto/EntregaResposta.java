@@ -14,6 +14,8 @@ public record EntregaResposta(
         Long motoristaId,
         Long clienteId,
         String cliente,
+        String codigo,
+        Integer volumes,
         String endereco,
         String cidade,
 
@@ -37,6 +39,8 @@ public record EntregaResposta(
                 entrega.getMotorista().getId(),
                 entrega.getCliente().getId(),
                 entrega.getCliente().getNome(),
+                entrega.getCodigo(),
+                entrega.getVolumes(),
                 entrega.getEndereco(),
                 entrega.getCidade(),
                 entrega.getJanelaInicio(),

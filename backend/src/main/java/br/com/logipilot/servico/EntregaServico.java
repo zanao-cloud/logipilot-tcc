@@ -66,9 +66,21 @@ public class EntregaServico {
                     "O fim da janela de entrega precisa ser depois do início.");
         }
 
+        // Dois pacotes com o mesmo código na rota do dia deixariam o motorista
+        // sem saber qual caixa é de qual parada.
+        String codigo = requisicao.codigo().trim().toUpperCase();
+        if (entregas.existsByCodigoIgnoreCaseAndMotoristaIdAndData(
+                codigo, motorista.getId(), requisicao.data())) {
+            throw new RegraDeNegocioException(
+                    "Já existe um pacote com a identificação %s na rota deste motorista nesta data."
+                            .formatted(codigo));
+        }
+
         Entrega entrega = new Entrega();
         entrega.setMotorista(motorista);
         entrega.setCliente(clientes.buscar(requisicao.clienteId()));
+        entrega.setCodigo(codigo);
+        entrega.setVolumes(requisicao.volumes() == null ? 1 : requisicao.volumes());
         entrega.setEndereco(requisicao.endereco().trim());
         entrega.setCidade(requisicao.cidade().trim());
         entrega.setJanelaInicio(requisicao.janelaInicio());

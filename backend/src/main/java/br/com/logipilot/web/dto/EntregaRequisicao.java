@@ -2,8 +2,11 @@ package br.com.logipilot.web.dto;
 
 import br.com.logipilot.dominio.Prioridade;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,6 +18,13 @@ public record EntregaRequisicao(
 
         @NotNull(message = "Selecione um cliente cadastrado.")
         Long clienteId,
+
+        @NotBlank(message = "Informe a identificação do pacote.")
+        @Size(max = 40, message = "A identificação do pacote é longa demais.")
+        String codigo,
+
+        @Min(value = 1, message = "A entrega precisa ter pelo menos um volume.")
+        Integer volumes,
 
         @NotNull(message = "Informe o endereço.")
         String endereco,

@@ -13,6 +13,8 @@ public interface EntregaRepository extends JpaRepository<Entrega, Long> {
 
     List<Entrega> findAllByDataOrderByOrdemAsc(LocalDate data);
 
+    boolean existsByCodigoIgnoreCaseAndMotoristaIdAndData(String codigo, Long motoristaId, LocalDate data);
+
     boolean existsByClienteId(Long clienteId);
 
     boolean existsByMotoristaId(Long motoristaId);

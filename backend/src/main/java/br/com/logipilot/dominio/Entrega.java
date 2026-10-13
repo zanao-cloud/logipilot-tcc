@@ -36,6 +36,14 @@ public class Entrega {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
+    /** O que está escrito na etiqueta da caixa: é por aqui que o motorista acha o pacote. */
+    @Column(nullable = false, length = 40)
+    private String codigo;
+
+    /** Quantas caixas saem para esta mesma parada. */
+    @Column(nullable = false)
+    private Integer volumes = 1;
+
     @Column(nullable = false, length = 200)
     private String endereco;
 
@@ -100,6 +108,22 @@ public class Entrega {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public Integer getVolumes() {
+        return volumes;
+    }
+
+    public void setVolumes(Integer volumes) {
+        this.volumes = volumes;
     }
 
     public String getEndereco() {

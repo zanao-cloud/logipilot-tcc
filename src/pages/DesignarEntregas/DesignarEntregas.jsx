@@ -18,6 +18,8 @@ import styles from './DesignarEntregas.module.css'
 const entregaEmBranco = () => ({
   clienteId: '',
   cliente: '',
+  codigo: '',
+  volumes: 1,
   endereco: '',
   cidade: '',
   janelaInicio: '08:00',
@@ -100,6 +102,8 @@ const DesignarEntregas = () => {
         motoristaId: String(id),
         clienteId: cliente.id,
         cliente: cliente.nome,
+        codigo: form.codigo.trim().toUpperCase(),
+        volumes: Number(form.volumes) || 1,
         endereco: form.endereco.trim(),
         cidade: form.cidade.trim(),
         janelaInicio: form.janelaInicio,
@@ -118,10 +122,10 @@ const DesignarEntregas = () => {
       const resposta = await api.post('/entregas', nova)
       setEntregas((atuais) => [...atuais, resposta.data])
       setForm({ ...entregaEmBranco(), data: form.data })
-      setAviso(`Entrega para ${cliente.nome} designada.`)
+      setAviso(`Pacote ${nova.codigo} designado para ${cliente.nome}.`)
     } catch (error) {
       console.error('Não foi possível designar a entrega.', error)
-      setErro('Não foi possível designar a entrega. Tente novamente.')
+      setErro(error.response?.data?.erro || 'Não foi possível designar a entrega. Tente novamente.')
     } finally {
       setEnviando(false)
     }
@@ -208,6 +212,37 @@ const DesignarEntregas = () => {
                           Nenhum cliente cadastrado. Peça ao gestor para cadastrar os clientes.
                         </div>
                       )}
+                    </div>
+
+                    <div className="row">
+                      <div className="col-8 mb-3">
+                        <label className="form-label" htmlFor="codigo">Identificação do pacote</label>
+                        <input
+                          id="codigo"
+                          className={`form-control ${styles.codigo}`}
+                          name="codigo"
+                          value={form.codigo}
+                          onChange={handleChange}
+                          placeholder="Ex: CX-1042"
+                          maxLength={40}
+                          required
+                        />
+                        <div className="form-text">O que está escrito na etiqueta da caixa.</div>
+                      </div>
+                      <div className="col-4 mb-3">
+                        <label className="form-label" htmlFor="volumes">Volumes</label>
+                        <input
+                          id="volumes"
+                          type="number"
+                          min="1"
+                          step="1"
+                          className="form-control"
+                          name="volumes"
+                          value={form.volumes}
+                          onChange={handleChange}
+                          required
+                        />
+                      </div>
                     </div>
 
                     <div className="mb-3">
@@ -303,13 +338,14 @@ const DesignarEntregas = () => {
                             <div className={styles.ordem}>{indice + 1}</div>
                             <div className="flex-grow-1">
                               <div className="d-flex flex-wrap align-items-center gap-2">
+                                <span className={styles.codigo}>{entrega.codigo}</span>
                                 <span className="fw-semibold">{entrega.cliente}</span>
                                 <span className={`badge ${info.cor}`}>{info.rotulo}</span>
                                 {entrega.prioridade === 'alta' && <span className="badge bg-danger">Prioridade alta</span>}
                               </div>
                               <div className="small text-muted">{entrega.endereco} · {entrega.cidade}</div>
                               <div className="small text-muted">
-                                Janela {entrega.janelaInicio}–{entrega.janelaFim} · {entrega.distanciaKm} km
+                                {entrega.volumes} volume(s) · Janela {entrega.janelaInicio}–{entrega.janelaFim} · {entrega.distanciaKm} km
                                 {foiConcluida(entrega) && horaDaConclusao(entrega) && ` · registrada às ${horaDaConclusao(entrega)}`}
                               </div>
                               {entrega.observacoesOperador && (

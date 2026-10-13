@@ -24,3 +24,20 @@
   align-items: center;
   justify-content: center;
 }
+
+/* A identificação do pacote é lida contra a etiqueta da caixa: fonte
+   monoespaçada evita confundir 0 com O e 1 com l. */
+.codigo {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+span.codigo {
+  background-color: #0f172a;
+  color: #fff;
+  border-radius: 0.375rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.8125rem;
+}

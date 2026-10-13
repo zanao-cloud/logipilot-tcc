@@ -69,7 +69,7 @@ class EntregaServicoTest {
     }
 
     private EntregaRequisicao requisicao(LocalTime inicio, LocalTime fim) {
-        return new EntregaRequisicao(2L, 1L, "Rua das Flores, 120", "São Paulo",
+        return new EntregaRequisicao(2L, 1L, "cx-1042", 3, "Rua das Flores, 120", "São Paulo",
                 inicio, fim, new BigDecimal("12.5"), Prioridade.ALTA, "doca dos fundos",
                 LocalDate.of(2026, 10, 16), null);
     }
@@ -87,6 +87,26 @@ class EntregaServicoTest {
         assertThat(entrega.getOrdem()).isEqualTo(4);
         assertThat(entrega.getStatus()).isEqualTo(StatusEntrega.PENDENTE);
         assertThat(entrega.getMotorista()).isSameAs(motorista);
+    }
+
+    @Test
+    @DisplayName("a identificação do pacote é guardada em maiúsculas")
+    void normalizaOCodigoDoPacote() {
+        Entrega entrega = servico.designar(requisicao(LocalTime.of(8, 0), LocalTime.of(12, 0)));
+
+        assertThat(entrega.getCodigo()).isEqualTo("CX-1042");
+        assertThat(entrega.getVolumes()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("recusa dois pacotes com a mesma identificação na rota do dia")
+    void recusaCodigoRepetidoNaRota() {
+        when(entregas.existsByCodigoIgnoreCaseAndMotoristaIdAndData(
+                "CX-1042", 2L, LocalDate.of(2026, 10, 16))).thenReturn(true);
+
+        assertThatThrownBy(() -> servico.designar(requisicao(LocalTime.of(8, 0), LocalTime.of(12, 0))))
+                .isInstanceOf(RegraDeNegocioException.class)
+                .hasMessageContaining("CX-1042");
     }
 
     @Test

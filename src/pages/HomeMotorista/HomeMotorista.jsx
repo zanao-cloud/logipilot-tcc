@@ -260,6 +260,12 @@ const HomeMotorista = () => {
               <div className={styles.proxima}>
                 <div>
                   <span className="badge bg-primary mb-2">Próxima parada</span>
+                  <div className={styles.codigoDestaque}>
+                    {proxima.codigo}
+                    <span className={styles.volumes}>
+                      {proxima.volumes} {proxima.volumes > 1 ? 'volumes' : 'volume'}
+                    </span>
+                  </div>
                   <div className="fw-bold">{proxima.cliente}</div>
                   <div className="small text-muted">{proxima.endereco} · {proxima.cidade}</div>
                   <div className="small text-muted">Janela {proxima.janelaInicio}–{proxima.janelaFim} · {proxima.distanciaKm} km</div>
@@ -297,6 +303,7 @@ const HomeMotorista = () => {
                       </div>
                       <div className="flex-grow-1 min-w-0">
                         <div className="d-flex flex-wrap align-items-center gap-2">
+                          <span className={styles.codigo}>{entrega.codigo}</span>
                           <span className="fw-bold">{entrega.cliente}</span>
                           <span className={`badge ${info.cor}`}>{info.rotulo}</span>
                           {entrega.prioridade === 'alta' && !concluida && (
@@ -310,6 +317,8 @@ const HomeMotorista = () => {
                         </div>
                         <div className="small text-muted">{entrega.endereco} · {entrega.cidade}</div>
                         <div className="small text-muted">
+                          <i className="fas fa-box me-1"></i>{entrega.volumes} {entrega.volumes > 1 ? 'volumes' : 'volume'}
+                          <span className="mx-2">·</span>
                           <i className="fas fa-clock me-1"></i>{entrega.janelaInicio}–{entrega.janelaFim}
                           <span className="mx-2">·</span>
                           <i className="fas fa-road me-1"></i>{entrega.distanciaKm} km
@@ -353,7 +362,9 @@ const HomeMotorista = () => {
 
                     {registrando === entrega.id && (
                       <div className={styles.registro}>
-                        <span className="small fw-semibold d-block mb-2">O que aconteceu na entrega?</span>
+                        <span className="small fw-semibold d-block mb-2">
+                          O que aconteceu com o pacote <span className={styles.codigo}>{entrega.codigo}</span>?
+                        </span>
 
                         <div className={styles.desfechos}>
                           <label className={`${styles.desfecho} ${desfecho === 'entregue' ? styles.desfechoAtivo : ''}`}>

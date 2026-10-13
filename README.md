@@ -115,6 +115,7 @@ backend/
     db/migration/
       V1__esquema.sql           DDL das tabelas
       V2__dados_iniciais.sql    dados migrados do db.json
+      V3__identificacao_do_pacote.sql   código e volumes da caixa
 ```
 
 ### Endpoints
@@ -169,7 +170,14 @@ O **projeto** não tem mais campo livre de cliente: em *Cadastro de Projeto* o c
 
 O **motorista entra sempre com a página vazia**. Quem monta a rota é o operador, em
 **Operador → Motoristas → Designar entregas**, informando cliente (o endereço vem preenchido do cadastro
-e pode ser ajustado), cidade, janela de entrega, distância estimada, prioridade, data e instruções.
+e pode ser ajustado), **identificação do pacote**, quantidade de volumes, cidade, janela de entrega,
+distância estimada, prioridade, data e instruções.
+
+A identificação do pacote é o que está escrito na etiqueta da caixa — é por ela que o motorista sabe qual
+volume da van pertence a qual parada. O código é gravado em maiúsculas e **não pode se repetir na rota do
+mesmo motorista no mesmo dia** (há um índice único em `motorista_id + data + codigo`); em datas diferentes
+o mesmo código é aceito. Na tela do motorista ele aparece em destaque, em fonte monoespaçada, para não
+confundir `0` com `O`.
 Na mesma tela o operador acompanha a rota do dia, o status de cada parada e as observações escritas
 pelo motorista.
 
