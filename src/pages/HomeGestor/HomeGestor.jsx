@@ -7,6 +7,7 @@ import CredentialUser from '../../components/CredentialUser'
 import StatCard from '../../components/StatCard'
 import { getUsuarioLogado } from '../../services/sessao'
 import { formatarData } from '../../services/formatadores'
+import { formatarPlaca } from '../../services/formatos'
 
 const HomeGestor = () => {
   const usuario = getUsuarioLogado()
@@ -162,7 +163,7 @@ const HomeGestor = () => {
                     <tr key={linha.motoristaId}>
                       <td>
                         <div className="fw-semibold">{linha.motorista}</div>
-                        <small className="text-muted">Placa {linha.placa || '—'}</small>
+                        <small className="text-muted">Placa {formatarPlaca(linha.placa)}</small>
                       </td>
                       <td className="text-center">{linha.entregas}</td>
                       <td className="text-center">{linha.entregues}</td>

@@ -4,6 +4,7 @@ import api from '../../services/api'
 import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 import Modal from '../../components/Modal'
+import { formatarPlaca, formatarTelefone } from '../../services/formatos'
 
 const ListarAcesso = () => {
   const [acessos, setAcessos] = useState([])
@@ -72,8 +73,8 @@ const ListarAcesso = () => {
                       <td>{acesso.email}</td>
                       <td className="text-capitalize">{acesso.papel}</td>
                       <td>
-                        <div>{acesso.telefone || '—'}</div>
-                        {acesso.papel === 'motorista' && <small className="text-muted">Placa: {acesso.placa || '—'}</small>}
+                        <div>{formatarTelefone(acesso.telefone)}</div>
+                        {acesso.papel === 'motorista' && <small className="text-muted">Placa: {formatarPlaca(acesso.placa)}</small>}
                       </td>
                       <td className="text-end">
                         <Link

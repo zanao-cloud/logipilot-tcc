@@ -4,6 +4,7 @@ import api from '../../services/api'
 import SidebarOperador from '../../components/SidebarOperador'
 import CredentialUser from '../../components/CredentialUser'
 import { calcularKpis, hojeISO } from '../../services/entregas'
+import { formatarPlaca, formatarTelefone } from '../../services/formatos'
 
 const ListarMotorista = () => {
   const [motoristas, setMotoristas] = useState([])
@@ -79,10 +80,10 @@ const ListarMotorista = () => {
                       <tr key={motorista.id}>
                         <td>
                           <div className="fw-semibold">{motorista.nome}</div>
-                          <small className="text-muted">Placa: {motorista.placa || '—'}</small>
+                          <small className="text-muted">Placa: {formatarPlaca(motorista.placa)}</small>
                         </td>
                         <td>
-                          <div>{motorista.telefone || '—'}</div>
+                          <div>{formatarTelefone(motorista.telefone)}</div>
                           <small className="text-muted">{motorista.email}</small>
                         </td>
                         <td className="text-center">

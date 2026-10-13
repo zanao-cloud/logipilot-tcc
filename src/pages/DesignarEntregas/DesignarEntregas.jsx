@@ -5,6 +5,7 @@ import SidebarOperador from '../../components/SidebarOperador'
 import CredentialUser from '../../components/CredentialUser'
 import Modal from '../../components/Modal'
 import { formatarData } from '../../services/formatadores'
+import { formatarPlaca, formatarTelefone } from '../../services/formatos'
 import {
   calcularKpis,
   foiConcluida,
@@ -164,7 +165,7 @@ const DesignarEntregas = () => {
                 <div>
                   <h2 className="h5 mb-1">{motorista.nome}</h2>
                   <p className="mb-0 text-muted">
-                    Placa {motorista.placa || '—'} · {motorista.telefone || 'sem telefone'}
+                    Placa {formatarPlaca(motorista.placa)} · {formatarTelefone(motorista.telefone)}
                   </p>
                 </div>
                 <div className="d-flex gap-4 text-center">

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
+import { mascaraPlaca, mascaraTelefone, placaValida, telefoneValido, normalizarPlaca, normalizarTelefone } from '../../services/formatos'
 import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 
@@ -28,6 +29,16 @@ const NovoAcesso = () => {
       return
     }
 
+    if (!telefoneValido(telefone)) {
+      setErro('Telefone inválido. Use DDD + número, como (11) 93936-9341.')
+      return
+    }
+
+    if (papel === 'motorista' && !placaValida(placa)) {
+      setErro('Placa inválida. Use o padrão Mercosul (ABC1D23) ou o antigo (ABC1234).')
+      return
+    }
+
     setEnviando(true)
 
     try {
@@ -38,8 +49,8 @@ const NovoAcesso = () => {
         email: email.trim().toLowerCase(),
         senha,
         papel,
-        telefone: telefone.trim(),
-        ...(papel === 'motorista' ? { placa: placa.trim().toUpperCase() } : {}),
+        telefone: normalizarTelefone(telefone),
+        ...(papel === 'motorista' ? { placa: normalizarPlaca(placa) } : {}),
       })
 
       navigate('/dashboard/acessos')
@@ -101,15 +112,26 @@ const NovoAcesso = () => {
             <input
               className="form-control"
               value={telefone}
-              onChange={(e) => setTelefone(e.target.value)}
+              onChange={(e) => setTelefone(mascaraTelefone(e.target.value))}
+              placeholder="(11) 93936-9341"
+              inputMode="tel"
               required
             />
+            <div className="form-text">Celular com 9 dígitos ou fixo com 8, sempre com DDD.</div>
           </div>
 
           {papel === 'motorista' && (
             <div className="mb-3">
               <label className="form-label">Placa do veículo</label>
-              <input className="form-control" value={placa} onChange={(e) => setPlaca(e.target.value)} required />
+              <input
+                className="form-control text-uppercase"
+                value={placa}
+                onChange={(e) => setPlaca(mascaraPlaca(e.target.value))}
+                placeholder="ABC1D23"
+                maxLength={7}
+                required
+              />
+              <div className="form-text">Mercosul (ABC1D23) ou antiga (ABC1234).</div>
             </div>
           )}
 

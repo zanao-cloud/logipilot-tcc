@@ -5,6 +5,7 @@ import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 import Modal from '../../components/Modal'
 import { formatarData } from '../../services/formatadores'
+import { formatarTelefone } from '../../services/formatos'
 
 const ListarCliente = () => {
   const [clientes, setClientes] = useState([])
@@ -81,7 +82,7 @@ const ListarCliente = () => {
                       </td>
                       <td>{cliente.responsavel || '—'}</td>
                       <td>
-                        <div>{cliente.telefone || '—'}</div>
+                        <div>{formatarTelefone(cliente.telefone)}</div>
                         <small className="text-muted">{cliente.email || '—'}</small>
                       </td>
                       <td>

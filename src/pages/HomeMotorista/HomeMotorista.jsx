@@ -4,6 +4,7 @@ import api from '../../services/api'
 import iaApi from '../../services/iaApi'
 import { getUsuarioLogado, logout } from '../../services/sessao'
 import { formatarData } from '../../services/formatadores'
+import { formatarPlaca } from '../../services/formatos'
 import LeitorDeCodigo from '../../components/LeitorDeCodigo'
 import {
   calcularKpis,
@@ -240,7 +241,7 @@ const HomeMotorista = () => {
         <img src="/logo.png" alt="LogiPilot" className={styles.logo} />
         <div className={styles.identificacao}>
           <span className={styles.nome}>{usuario ? usuario.nome : 'Motorista'}</span>
-          <span className={styles.placa}>{usuario?.placa ? `Placa ${usuario.placa}` : 'Sem veículo'}</span>
+          <span className={styles.placa}>{usuario?.placa ? `Placa ${formatarPlaca(usuario.placa)}` : 'Sem veículo'}</span>
         </div>
         <button type="button" className="btn btn-outline-light btn-sm" onClick={sair}>
           <i className="fas fa-sign-out-alt me-1"></i>Sair

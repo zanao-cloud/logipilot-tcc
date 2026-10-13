@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
+import { mascaraTelefone, normalizarTelefone, telefoneValido } from '../../services/formatos'
 import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 
@@ -26,6 +27,12 @@ const NovoCliente = () => {
   const enviarCliente = async (e) => {
     e.preventDefault()
     setErro('')
+
+    if (cliente.telefone && !telefoneValido(cliente.telefone)) {
+      setErro('Telefone inválido. Use DDD + número, como (11) 3322-4455.')
+      return
+    }
+
     setEnviando(true)
 
     try {
@@ -42,7 +49,7 @@ const NovoCliente = () => {
         nome,
         documento: cliente.documento.trim(),
         responsavel: cliente.responsavel.trim(),
-        telefone: cliente.telefone.trim(),
+        telefone: normalizarTelefone(cliente.telefone),
         email: cliente.email.trim().toLowerCase(),
         endereco: cliente.endereco.trim(),
         cidade: cliente.cidade.trim(),
@@ -84,7 +91,15 @@ const NovoCliente = () => {
           <div className="row">
             <div className="col-sm-6 mb-3">
               <label className="form-label" htmlFor="telefone">Telefone</label>
-              <input id="telefone" className="form-control" name="telefone" value={cliente.telefone} onChange={handleChange} />
+              <input
+                id="telefone"
+                className="form-control"
+                name="telefone"
+                value={mascaraTelefone(cliente.telefone)}
+                onChange={handleChange}
+                placeholder="(11) 3322-4455"
+                inputMode="tel"
+              />
             </div>
             <div className="col-sm-6 mb-3">
               <label className="form-label" htmlFor="email">E-mail</label>

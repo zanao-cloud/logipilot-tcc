@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import api from '../../services/api'
+import { mascaraPlaca, mascaraTelefone, placaValida, telefoneValido, normalizarPlaca, normalizarTelefone } from '../../services/formatos'
 import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 
@@ -46,14 +47,24 @@ const EditarAcesso = () => {
         return
       }
 
+      if (!telefoneValido(acesso.telefone)) {
+        setErro('Telefone inválido. Use DDD + número, como (11) 93936-9341.')
+        return
+      }
+
+      if (acesso.papel === 'motorista' && !placaValida(acesso.placa)) {
+        setErro('Placa inválida. Use o padrão Mercosul (ABC1D23) ou o antigo (ABC1234).')
+        return
+      }
+
       // Senha em branco significa "manter a atual" — é assim que o Spring trata.
       await api.put(`/usuarios/${id}`, {
         ...acesso,
         nome: acesso.nome.trim(),
         email: acesso.email.trim().toLowerCase(),
-        telefone: acesso.telefone.trim(),
+        telefone: normalizarTelefone(acesso.telefone),
         senha: novaSenha || null,
-        ...(acesso.papel === 'motorista' ? { placa: acesso.placa?.trim().toUpperCase() } : { placa: '' }),
+        ...(acesso.papel === 'motorista' ? { placa: normalizarPlaca(acesso.placa) } : { placa: '' }),
       })
 
       navigate('/dashboard/acessos')
@@ -103,22 +114,28 @@ const EditarAcesso = () => {
             <input
               className="form-control"
               name="telefone"
-              value={acesso.telefone}
+              value={mascaraTelefone(acesso.telefone || '')}
               onChange={handleChange}
+              placeholder="(11) 93936-9341"
+              inputMode="tel"
               required
             />
+            <div className="form-text">Celular com 9 dígitos ou fixo com 8, sempre com DDD.</div>
           </div>
 
           {acesso.papel === 'motorista' && (
             <div className="mb-3">
               <label className="form-label">Placa do veículo</label>
               <input
-                className="form-control"
+                className="form-control text-uppercase"
                 name="placa"
-                value={acesso.placa || ''}
+                value={mascaraPlaca(acesso.placa || '')}
                 onChange={handleChange}
+                placeholder="ABC1D23"
+                maxLength={7}
                 required
               />
+              <div className="form-text">Mercosul (ABC1D23) ou antiga (ABC1234).</div>
             </div>
           )}
 

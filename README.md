@@ -96,6 +96,22 @@ A senha trafega em texto apenas entre o navegador e o servidor; no banco fica **
 > Os acessos que vieram do `db.json` foram recriados pela migração com a mesma senha de desenvolvimento
 > que já valia lá (`123456`). **Troque essa senha em Dashboard → Acessos antes de qualquer uso real.**
 
+## Formatos do cadastro
+
+Placa e telefone seguem o padrão brasileiro, para o cadastro não aceitar valor inventado. A regra é a
+mesma em três camadas: máscara e aviso na tela (`src/services/formatos.js`), validação no serviço
+(`dominio/Formatos.java`) e `CHECK` no banco (migração V5) — assim nem um `INSERT` feito direto no MySQL
+passa com dado fora do padrão.
+
+| Campo | Aceita | Guardado como |
+|---|---|---|
+| Placa | Mercosul `ABC1D23` e antiga `ABC1234`, com ou sem traço, em qualquer caixa | `ABC1D23` (maiúsculas, sem separador) |
+| Telefone | celular com DDD e 9 dígitos, fixo com DDD e 8, com ou sem máscara | `11939369341` (só dígitos) |
+
+O DDD precisa começar de 1 a 9 e o celular precisa ter o nono dígito, então `999999`, `01912345678` e
+`11123456789` são recusados. A exibição volta formatada (`(11) 93936-9341`, `ABC-1234`). A placa só é
+guardada para motoristas: ao mudar o papel do acesso, ela é descartada.
+
 ## O back-end Spring
 
 ```
@@ -117,6 +133,7 @@ backend/
       V2__dados_iniciais.sql    dados migrados do db.json
       V3__identificacao_do_pacote.sql   código e volumes da caixa
       V4__conferencia_comprovante_reagendamento.sql
+      V5__padroniza_placa_e_telefone.sql
 ```
 
 ### Endpoints
@@ -161,9 +178,10 @@ na subida, em vez de dar erro só na primeira consulta.
 cd backend && ./mvnw test
 ```
 
-São testes de unidade com Mockito, sem banco: cobrem a autenticação (senha certa, senha errada, e-mail
-inexistente) e as regras das entregas (posição na rota, janela invertida, entrega designada a quem não é
-motorista, ausência sem observação, desfazer e reordenação).
+São 43 testes de unidade, sem banco: cobrem a autenticação (senha certa, senha errada, e-mail
+inexistente), as regras das entregas (posição na rota, janela invertida, entrega designada a quem não é
+motorista, código de pacote repetido, ausência sem observação, desfazer e reordenação) e os formatos de
+placa e telefone.
 
 ## Clientes, projetos e entregas
 

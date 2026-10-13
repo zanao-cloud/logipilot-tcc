@@ -1,5 +1,6 @@
 package br.com.logipilot.servico;
 
+import br.com.logipilot.dominio.Formatos;
 import br.com.logipilot.dominio.Papel;
 import br.com.logipilot.dominio.Usuario;
 import br.com.logipilot.repositorio.AnaliseRepository;
@@ -108,12 +109,41 @@ public class UsuarioServico {
     private void aplicar(Usuario usuario, UsuarioRequisicao requisicao, String email) {
         usuario.setNome(requisicao.nome().trim());
         usuario.setEmail(email);
-        usuario.setTelefone(textoOuNulo(requisicao.telefone()));
+        usuario.setTelefone(telefoneValidado(requisicao.telefone()));
 
-        boolean motorista = usuario.getPapel() == Papel.MOTORISTA;
-        usuario.setPlaca(motorista && requisicao.placa() != null
-                ? requisicao.placa().trim().toUpperCase()
+        // A placa só faz sentido para motorista; nos outros papéis ela é descartada.
+        usuario.setPlaca(usuario.getPapel() == Papel.MOTORISTA
+                ? placaValidada(requisicao.placa())
                 : null);
+    }
+
+    /** Guarda só os dígitos; a máscara com parênteses e traço é feita na tela. */
+    private String telefoneValidado(String telefone) {
+        String normalizado = Formatos.normalizarTelefone(telefone);
+
+        if (normalizado == null) {
+            return null;
+        }
+        if (!Formatos.telefoneValido(normalizado)) {
+            throw new RegraDeNegocioException(
+                    "Telefone inválido. Use DDD + número, como (11) 93936-9341 ou (11) 3322-4455.");
+        }
+
+        return normalizado;
+    }
+
+    private String placaValidada(String placa) {
+        String normalizada = Formatos.normalizarPlaca(placa);
+
+        if (normalizada == null) {
+            return null;
+        }
+        if (!Formatos.placaValida(normalizada)) {
+            throw new RegraDeNegocioException(
+                    "Placa inválida. Use o padrão Mercosul (ABC1D23) ou o antigo (ABC1234).");
+        }
+
+        return normalizada;
     }
 
     private String normalizarEmail(String email) {

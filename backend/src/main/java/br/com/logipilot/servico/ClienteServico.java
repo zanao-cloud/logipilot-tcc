@@ -1,6 +1,7 @@
 package br.com.logipilot.servico;
 
 import br.com.logipilot.dominio.Cliente;
+import br.com.logipilot.dominio.Formatos;
 import br.com.logipilot.repositorio.ClienteRepository;
 import br.com.logipilot.repositorio.EntregaRepository;
 import br.com.logipilot.repositorio.ProjetoRepository;
@@ -84,12 +85,26 @@ public class ClienteServico {
         cliente.setNome(requisicao.nome().trim());
         cliente.setDocumento(textoOuNulo(requisicao.documento()));
         cliente.setResponsavel(textoOuNulo(requisicao.responsavel()));
-        cliente.setTelefone(textoOuNulo(requisicao.telefone()));
+        cliente.setTelefone(telefoneValidado(requisicao.telefone()));
         cliente.setEmail(requisicao.email() == null || requisicao.email().isBlank()
                 ? null
                 : requisicao.email().trim().toLowerCase());
         cliente.setEndereco(requisicao.endereco().trim());
         cliente.setCidade(requisicao.cidade().trim());
+    }
+
+    private String telefoneValidado(String telefone) {
+        String normalizado = Formatos.normalizarTelefone(telefone);
+
+        if (normalizado == null) {
+            return null;
+        }
+        if (!Formatos.telefoneValido(normalizado)) {
+            throw new RegraDeNegocioException(
+                    "Telefone inválido. Use DDD + número, como (11) 93936-9341 ou (11) 3322-4455.");
+        }
+
+        return normalizado;
     }
 
     private String textoOuNulo(String valor) {
