@@ -11,6 +11,9 @@ import java.time.Instant;
 public record EntregaAtualizacao(
         StatusEntrega status,
         String observacoes,
+        String recebidoPor,
         Instant concluidaEm,
-        Integer ordem) {
+        Integer ordem,
+        /* Conferência de carga: true marca o pacote como carregado, false desmarca. */
+        Boolean conferida) {
 }

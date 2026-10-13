@@ -14,6 +14,12 @@ export const statusInfo = (status) => STATUS[status] || STATUS.pendente
 
 export const foiConcluida = (entrega) => entrega.status === 'entregue' || entrega.status === 'ausente'
 
+/** Conferência de carga: o motorista confirmou que pegou o pacote na van. */
+export const foiConferida = (entrega) => Boolean(entrega.conferidaEm)
+
+/** A foto do comprovante é servida pela própria API, pelo id da entrega. */
+export const urlDoComprovante = (entrega) => `/api/entregas/${entrega.id}/comprovante`
+
 /** Ordena pela sequência definida pelo operador ou pela otimização de rota. */
 export const ordenarEntregas = (entregas) => [...entregas].sort((a, b) => {
   const ordemA = Number(a.ordem) || 0
@@ -65,6 +71,10 @@ export const calcularKpis = (entregas) => {
 
   const kmPlanejados = entregas.reduce((soma, entrega) => soma + (Number(entrega.distanciaKm) || 0), 0)
 
+  const pendentesDoDia = entregas.filter((e) => !foiConcluida(e))
+  const conferidas = pendentesDoDia.filter(foiConferida).length
+  const volumes = entregas.reduce((soma, e) => soma + (Number(e.volumes) || 1), 0)
+
   const noPrazo = entregues.filter(foiPontual).length
   const pontualidade = entregues.length > 0 ? Math.round((noPrazo / entregues.length) * 100) : null
   const progresso = total > 0 ? Math.round((concluidas / total) * 100) : 0
@@ -80,6 +90,9 @@ export const calcularKpis = (entregas) => {
     noPrazo,
     pontualidade,
     progresso,
+    volumes,
+    conferidas,
+    aConferir: pendentesDoDia.length - conferidas,
   }
 }
 

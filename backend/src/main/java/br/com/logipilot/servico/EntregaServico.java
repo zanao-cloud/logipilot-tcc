@@ -8,9 +8,11 @@ import br.com.logipilot.dominio.Usuario;
 import br.com.logipilot.repositorio.EntregaRepository;
 import br.com.logipilot.web.dto.EntregaAtualizacao;
 import br.com.logipilot.web.dto.EntregaRequisicao;
+import br.com.logipilot.web.dto.ReagendamentoRequisicao;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -129,12 +131,28 @@ public class EntregaServico {
                         : atualizacao.concluidaEm());
                 entrega.setObservacoes(textoOuNulo(atualizacao.observacoes()));
             }
-        } else if (atualizacao.observacoes() != null) {
-            entrega.setObservacoes(textoOuNulo(atualizacao.observacoes()));
+
+            if (atualizacao.status() == StatusEntrega.ENTREGUE) {
+                entrega.setRecebidoPor(textoOuNulo(atualizacao.recebidoPor()));
+            } else {
+                // Ausência e reabertura não têm quem receba.
+                entrega.setRecebidoPor(null);
+            }
+        } else {
+            if (atualizacao.observacoes() != null) {
+                entrega.setObservacoes(textoOuNulo(atualizacao.observacoes()));
+            }
+            if (atualizacao.recebidoPor() != null) {
+                entrega.setRecebidoPor(textoOuNulo(atualizacao.recebidoPor()));
+            }
         }
 
         if (atualizacao.ordem() != null) {
             entrega.setOrdem(atualizacao.ordem());
+        }
+
+        if (atualizacao.conferida() != null) {
+            entrega.setConferidaEm(atualizacao.conferida() ? Instant.now() : null);
         }
 
         return entregas.save(entrega);
@@ -143,6 +161,90 @@ public class EntregaServico {
     @Transactional
     public void excluir(Long id) {
         entregas.delete(buscar(id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Entrega> pendentesDeReagendamento() {
+        return entregas.buscarPendentesDeReagendamento();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Entrega> listarPorPeriodo(LocalDate inicio, LocalDate fim) {
+        return entregas.findAllByDataBetweenOrderByDataAscOrdemAsc(inicio, fim);
+    }
+
+    /**
+     * Cria uma nova tentativa para uma parada em que não havia ninguém no local.
+     * A entrega original continua no histórico como ausente; a nova aponta para
+     * ela, então dá para contar quantas visitas um pacote precisou.
+     */
+    @Transactional
+    public Entrega reagendar(Long id, ReagendamentoRequisicao requisicao) {
+        Entrega original = buscar(id);
+
+        if (original.getStatus() != StatusEntrega.AUSENTE) {
+            throw new RegraDeNegocioException(
+                    "Só é possível reagendar uma entrega em que não havia ninguém no local.");
+        }
+        if (entregas.existsByReagendadaDeId(id)) {
+            throw new RegraDeNegocioException(
+                    "Esta entrega já foi reagendada; a nova tentativa está na rota.");
+        }
+
+        Usuario motorista = requisicao.motoristaId() == null
+                ? original.getMotorista()
+                : usuarios.buscar(requisicao.motoristaId());
+
+        if (motorista.getPapel() != Papel.MOTORISTA) {
+            throw new RegraDeNegocioException("Entregas só podem ser designadas a motoristas.");
+        }
+
+        LocalTime inicio = requisicao.janelaInicio() == null
+                ? original.getJanelaInicio()
+                : requisicao.janelaInicio();
+        LocalTime fim = requisicao.janelaFim() == null
+                ? original.getJanelaFim()
+                : requisicao.janelaFim();
+
+        if (!fim.isAfter(inicio)) {
+            throw new RegraDeNegocioException(
+                    "O fim da janela de entrega precisa ser depois do início.");
+        }
+        if (entregas.existsByCodigoIgnoreCaseAndMotoristaIdAndData(
+                original.getCodigo(), motorista.getId(), requisicao.data())) {
+            throw new RegraDeNegocioException(
+                    "O pacote %s já está na rota deste motorista nesta data."
+                            .formatted(original.getCodigo()));
+        }
+
+        Entrega nova = new Entrega();
+        nova.setMotorista(motorista);
+        nova.setCliente(original.getCliente());
+        nova.setCodigo(original.getCodigo());
+        nova.setVolumes(original.getVolumes());
+        nova.setEndereco(original.getEndereco());
+        nova.setCidade(original.getCidade());
+        nova.setJanelaInicio(inicio);
+        nova.setJanelaFim(fim);
+        nova.setDistanciaKm(original.getDistanciaKm());
+        nova.setPrioridade(original.getPrioridade());
+        nova.setObservacoesOperador(requisicao.observacoesOperador() == null
+                ? original.getObservacoesOperador()
+                : textoOuNulo(requisicao.observacoesOperador()));
+        nova.setData(requisicao.data());
+        nova.setOrdem(proximaOrdem(motorista.getId(), requisicao.data()));
+        nova.setStatus(StatusEntrega.PENDENTE);
+        nova.setReagendadaDe(original);
+        nova.setCriadoEm(Instant.now());
+
+        return entregas.save(nova);
+    }
+
+    @Transactional
+    public Entrega registrarComprovante(Long id, String nomeDoArquivo) {
+        Entrega entrega = buscar(id);
+        entrega.setComprovanteArquivo(nomeDoArquivo);
+        return entregas.save(entrega);
     }
 
     private int proximaOrdem(Long motoristaId, LocalDate data) {

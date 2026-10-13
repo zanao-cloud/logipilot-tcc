@@ -8,10 +8,13 @@ import { extrairConteudo } from './extratores.js'
 import { gerarDiagnosticoLocal, detectarSerieTemporal } from './diagnosticoLocal.js'
 import { resumirTexto } from './resumo.js'
 import { otimizarRotaLocal } from './rotaLocal.js'
+import { diagnosticarOperacaoLocal } from './operacaoLocal.js'
 import {
   PROMPT_ANALISE,
   PROMPT_CHAT,
+  PROMPT_OPERACAO,
   PROMPT_ROTA,
+  montarMensagemDaOperacao,
   montarMensagemDaRota,
   montarMensagemDoUsuario,
 } from './prompts.js'
@@ -244,6 +247,56 @@ app.post('/otimizar-rota', async (req, res) => {
   } catch (error) {
     console.error('Erro ao otimizar a rota com a IA; usando a sequência local:', error)
     return res.json(otimizarRotaLocal(entregas))
+  }
+})
+
+/**
+ * Diagnóstico da operação a partir das entregas que o próprio LogiPilot
+ * registrou — sem planilha nenhuma. Devolve o mesmo formato de /analisar,
+ * então a tela de detalhe da análise funciona igual.
+ */
+app.post('/analisar-operacao', async (req, res) => {
+  const { relatorio } = req.body
+
+  if (!relatorio || !relatorio.totais) {
+    return res.status(400).json({ erro: 'Envie o relatório de entregas do período.' })
+  }
+
+  if (!relatorio.totais.entregas) {
+    return res.status(400).json({
+      erro: 'Não há entregas registradas no período escolhido para analisar.',
+    })
+  }
+
+  // O gráfico e a previsão saem das entregas concluídas por dia, calculados
+  // aqui mesmo — a IA não participa desta parte.
+  const serieTemporal = (relatorio.porDia || []).map((dia) => ({
+    rotulo: dia.data,
+    valor: Number(dia.entregues) || 0,
+  }))
+
+  const fontes = [`Entregas registradas no LogiPilot (${relatorio.de} a ${relatorio.ate})`]
+
+  if (!process.env.GROQ_API_KEY) {
+    console.warn('GROQ_API_KEY não configurada: usando o diagnóstico local da operação.')
+    return res.json({ ...diagnosticarOperacaoLocal(relatorio), serieTemporal, fontes })
+  }
+
+  try {
+    const conteudo = await chamarGroq({
+      model: MODELO_TEXTO,
+      temperature: 0.3,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: PROMPT_OPERACAO },
+        { role: 'user', content: montarMensagemDaOperacao(relatorio) },
+      ],
+    })
+
+    return res.json({ ...JSON.parse(conteudo), serieTemporal, fontes })
+  } catch (error) {
+    console.error('Erro ao analisar a operação com a IA; usando o diagnóstico local:', error)
+    return res.json({ ...diagnosticarOperacaoLocal(relatorio), serieTemporal, fontes })
   }
 })
 

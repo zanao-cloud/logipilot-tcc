@@ -116,6 +116,7 @@ backend/
       V1__esquema.sql           DDL das tabelas
       V2__dados_iniciais.sql    dados migrados do db.json
       V3__identificacao_do_pacote.sql   código e volumes da caixa
+      V4__conferencia_comprovante_reagendamento.sql
 ```
 
 ### Endpoints
@@ -127,6 +128,10 @@ backend/
 | `GET/POST/PUT/DELETE` | `/clientes` | Cadastro de clientes |
 | `GET/POST/PUT/DELETE` | `/projetos` | Projetos. Aceita `?clienteId=` |
 | `GET/POST/PATCH/DELETE` | `/entregas` | Entregas. Aceita `?motoristaId=` e `?data=` |
+| `GET` | `/entregas/reagendamento` | Fila de paradas ausentes ainda não reagendadas |
+| `POST` | `/entregas/{id}/reagendar` | Cria a nova tentativa |
+| `POST/GET` | `/entregas/{id}/comprovante` | Envia e devolve a foto do comprovante |
+| `GET` | `/relatorios/entregas` | Indicadores do período (`?de=`, `?ate=`) |
 | `GET/POST/DELETE` | `/analises` | Análises. Aceita `?criadoPorId=` |
 
 O `PATCH /entregas/{id}` é a atualização parcial usada em dois momentos: quando o motorista fecha a parada
@@ -196,6 +201,33 @@ Ao registrar uma parada o motorista escolhe o desfecho — **Entregue** ou **Nã
 (neste caso a observação é obrigatória) — e pode escrever observações em qualquer um dos dois. Cada parada
 tem link para abrir o endereço no mapa e pode ser desfeita caso o registro tenha sido errado.
 
+### Conferência de carga
+
+Antes de sair, o motorista marca cada pacote ao colocar na van — pelo checkbox ou **bipando o QR da
+etiqueta** com a câmera. O painel mostra quantos faltam, então uma caixa esquecida aparece na garagem e
+não na porta do cliente. A leitura usa a `BarcodeDetector` nativa do navegador; onde ela não existe
+(Safari, por exemplo), o leitor avisa e aceita o código digitado.
+
+### Etiquetas
+
+Em **Designar entregas → Etiquetas** sai uma folha imprimível com uma etiqueta por parada: QR do código,
+cliente, endereço, janela e número de volumes, na ordem da rota. É o mesmo código que o motorista lê no
+aplicativo.
+
+### Comprovante de entrega
+
+Ao registrar uma entrega o motorista informa **quem recebeu** e pode anexar uma **foto** (canhoto assinado
+ou fachada). A imagem fica no disco do servidor — `backend/comprovantes/`, configurável por
+`COMPROVANTES_DIR` — e no banco guarda-se só o nome do arquivo; coluna com imagem incha o dump e deixa
+qualquer consulta lenta. O operador vê o nome e a foto na rota do dia.
+
+### Reagendamento
+
+Toda parada fechada como "não havia ninguém no local" cai na fila de **Operador → Reagendamentos**. Ao
+reagendar, o sistema cria uma **nova entrega** apontando para a original (`reagendada_de_id`): a tentativa
+anterior continua no histórico, e dá para contar quantas visitas um pacote precisou. Um índice único
+garante que a mesma tentativa não gere duas paradas.
+
 ### Otimizar entregas
 
 O botão **Otimizar entregas** envia as paradas pendentes para `POST /otimizar-rota` (servidor da Groq) e
@@ -205,6 +237,18 @@ mesma região, respeita as janelas que fecham mais cedo e põe a prioridade alta
 A resposta só é aceita se trouxer exatamente os mesmos ids enviados, sem repetir nem perder parada. Sem a
 chave da Groq — ou se a IA devolver uma sequência inválida — a ordem vem do cálculo determinístico em
 `server/rotaLocal.js`, então o botão nunca deixa o motorista sem resposta.
+
+## Painel do gestor
+
+O painel mostra os indicadores calculados sobre as entregas registradas — entregas no período,
+pontualidade, ausências e km rodados — mais o desempenho por motorista e os clientes em que o motorista
+mais encontrou a porta fechada. Tudo vem de `GET /relatorios/entregas?de=&ate=` (sem datas, os últimos
+30 dias).
+
+O botão **Analisar entregas com IA** fecha o ciclo entre os dois módulos do sistema: em vez de pedir uma
+planilha, ele manda esses indicadores para `POST /analisar-operacao` e salva o retorno como uma análise
+comum — com resumo, diagnóstico, gargalos, plano de ação, previsão e chat, as mesmas telas da análise de
+arquivos. Sem chave da Groq, o diagnóstico vem de `server/operacaoLocal.js`.
 
 ## Análise multimodal
 
@@ -252,6 +296,7 @@ server/            (Node — só a IA)
   resumo.js          resumo estatístico de tabelas grandes
   diagnosticoLocal.js  diagnóstico sem IA e detecção da série temporal
   rotaLocal.js       sequência de rota sem IA
+  operacaoLocal.js   diagnóstico da operação sem IA
   prompts.js         instruções enviadas ao modelo
 backend/           (Java — API REST e banco)
 db.json            arquivo do antigo json-server; fica no repositório apenas

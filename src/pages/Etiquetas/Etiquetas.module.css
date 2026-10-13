@@ -1,0 +1,123 @@
+.pagina {
+  min-height: 100vh;
+  background-color: var(--fundo);
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem clamp(1rem, 3vw, 2rem);
+  background-color: #fff;
+  border-bottom: 1px solid var(--borda);
+}
+
+.folha {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: 0.75rem;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.etiqueta {
+  background-color: #fff;
+  border: 2px dashed var(--tinta-clara);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  break-inside: avoid;
+}
+
+.cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tinta-media);
+  border-bottom: 1px solid var(--borda);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.volumes {
+  background-color: var(--azul-escuro);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+}
+
+.corpo {
+  display: flex;
+  gap: 0.625rem;
+  align-items: flex-start;
+}
+
+.qr {
+  width: 5.25rem;
+  height: 5.25rem;
+  flex-shrink: 0;
+}
+
+.dados {
+  min-width: 0;
+  flex: 1;
+}
+
+.codigo {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+}
+
+.cliente {
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-top: 0.15rem;
+}
+
+.endereco {
+  font-size: 0.75rem;
+  color: var(--tinta-media);
+}
+
+.janela {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--tinta);
+  margin-top: 0.25rem;
+}
+
+.rodape {
+  font-size: 0.6875rem;
+  color: var(--tinta-clara);
+  border-top: 1px solid var(--borda);
+  margin-top: 0.5rem;
+  padding-top: 0.35rem;
+}
+
+/* Na impressão some tudo que não é etiqueta. */
+@media print {
+  .barra {
+    display: none;
+  }
+
+  .pagina {
+    background-color: #fff;
+  }
+
+  .folha {
+    padding: 0;
+    gap: 0.5rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .etiqueta {
+    border-color: #999;
+  }
+}

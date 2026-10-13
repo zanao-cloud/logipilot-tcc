@@ -44,6 +44,10 @@ public class Entrega {
     @Column(nullable = false)
     private Integer volumes = 1;
 
+    /** Marcado na conferência de carga, antes de o motorista sair. */
+    @Column(name = "conferida_em")
+    private Instant conferidaEm;
+
     @Column(nullable = false, length = 200)
     private String endereco;
 
@@ -79,6 +83,19 @@ public class Entrega {
 
     @Column(length = 500)
     private String observacoes;
+
+    /** Quem recebeu a mercadoria no local. */
+    @Column(name = "recebido_por", length = 120)
+    private String recebidoPor;
+
+    /** Nome do arquivo da foto do comprovante, guardada fora do banco. */
+    @Column(name = "comprovante_arquivo", length = 255)
+    private String comprovanteArquivo;
+
+    /** Quando esta parada é uma nova tentativa, aponta para a que deu ausente. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reagendada_de_id")
+    private Entrega reagendadaDe;
 
     @Column(name = "concluida_em")
     private Instant concluidaEm;
@@ -212,6 +229,38 @@ public class Entrega {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
+    }
+
+    public Instant getConferidaEm() {
+        return conferidaEm;
+    }
+
+    public void setConferidaEm(Instant conferidaEm) {
+        this.conferidaEm = conferidaEm;
+    }
+
+    public String getRecebidoPor() {
+        return recebidoPor;
+    }
+
+    public void setRecebidoPor(String recebidoPor) {
+        this.recebidoPor = recebidoPor;
+    }
+
+    public String getComprovanteArquivo() {
+        return comprovanteArquivo;
+    }
+
+    public void setComprovanteArquivo(String comprovanteArquivo) {
+        this.comprovanteArquivo = comprovanteArquivo;
+    }
+
+    public Entrega getReagendadaDe() {
+        return reagendadaDe;
+    }
+
+    public void setReagendadaDe(Entrega reagendadaDe) {
+        this.reagendadaDe = reagendadaDe;
     }
 
     public Instant getConcluidaEm() {

@@ -5,6 +5,7 @@ import br.com.logipilot.servico.RecursoNaoEncontradoException;
 import br.com.logipilot.servico.RegraDeNegocioException;
 import br.com.logipilot.web.dto.ErroResposta;
 import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -42,6 +43,16 @@ public class TratadorDeErros {
 
         String mensagem = detalhes.isEmpty() ? "Dados inválidos." : detalhes.get(0);
         return ResponseEntity.badRequest().body(new ErroResposta(mensagem, detalhes));
+    }
+
+    /**
+     * Rede de segurança para as restrições do banco (índices únicos, chaves
+     * estrangeiras): sem isto o usuário veria um 500 cru.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErroResposta> integridade(DataIntegrityViolationException excecao) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErroResposta.de(
+                "A operação conflita com dados já gravados. Atualize a página e tente de novo."));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

@@ -12,15 +12,22 @@ const HomeOperador = () => {
   const [analises, setAnalises] = useState([])
   const [motoristas, setMotoristas] = useState([])
   const [entregas, setEntregas] = useState([])
+  const [filaDeReagendamento, setFilaDeReagendamento] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
   useEffect(() => {
-    Promise.all([api.get('/analises'), api.get('/usuarios'), api.get('/entregas')])
-      .then(([respostaAnalises, respostaUsuarios, respostaEntregas]) => {
+    Promise.all([
+      api.get('/analises'),
+      api.get('/usuarios'),
+      api.get('/entregas'),
+      api.get('/entregas/reagendamento'),
+    ])
+      .then(([respostaAnalises, respostaUsuarios, respostaEntregas, respostaFila]) => {
         setAnalises(respostaAnalises.data)
         setMotoristas(respostaUsuarios.data.filter((u) => u.papel === 'motorista'))
         setEntregas(respostaEntregas.data)
+        setFilaDeReagendamento(respostaFila.data)
       })
       .catch((error) => {
         console.error('Erro ao carregar o painel do operador.', error)
@@ -62,6 +69,25 @@ const HomeOperador = () => {
             </Link>
           </div>
         </div>
+
+        {filaDeReagendamento.length > 0 && (
+          <div className="content-card card shadow-sm mb-4 border-warning">
+            <div className="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h2 className="h6 mb-1">
+                  <i className="fas fa-triangle-exclamation text-warning me-1"></i>
+                  Entregas esperando reagendamento
+                </h2>
+                <p className="mb-0 text-muted">
+                  {filaDeReagendamento.length} parada(s) em que não havia ninguém no local.
+                </p>
+              </div>
+              <Link to="/operador/reagendamentos" className="btn btn-warning">
+                <i className="fas fa-rotate me-1"></i>Reagendar
+              </Link>
+            </div>
+          </div>
+        )}
 
         <div className="content-card card shadow-sm mb-4">
           <div className="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">

@@ -16,6 +16,7 @@ public record EntregaResposta(
         String cliente,
         String codigo,
         Integer volumes,
+        Instant conferidaEm,
         String endereco,
         String cidade,
 
@@ -30,6 +31,9 @@ public record EntregaResposta(
         Integer ordem,
         StatusEntrega status,
         String observacoes,
+        String recebidoPor,
+        boolean temComprovante,
+        Long reagendadaDeId,
         Instant concluidaEm,
         Instant criadoEm) {
 
@@ -41,6 +45,7 @@ public record EntregaResposta(
                 entrega.getCliente().getNome(),
                 entrega.getCodigo(),
                 entrega.getVolumes(),
+                entrega.getConferidaEm(),
                 entrega.getEndereco(),
                 entrega.getCidade(),
                 entrega.getJanelaInicio(),
@@ -52,6 +57,9 @@ public record EntregaResposta(
                 entrega.getOrdem(),
                 entrega.getStatus(),
                 entrega.getObservacoes(),
+                entrega.getRecebidoPor(),
+                entrega.getComprovanteArquivo() != null,
+                entrega.getReagendadaDe() == null ? null : entrega.getReagendadaDe().getId(),
                 entrega.getConcluidaEm(),
                 entrega.getCriadoEm());
     }

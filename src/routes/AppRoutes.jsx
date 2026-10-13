@@ -21,6 +21,8 @@ import EditarAcesso from '../pages/EditarAcesso/EditarAcesso'
 
 import ListarMotorista from '../pages/ListarMotorista/ListarMotorista'
 import DesignarEntregas from '../pages/DesignarEntregas/DesignarEntregas'
+import Reagendamentos from '../pages/Reagendamentos/Reagendamentos'
+import Etiquetas from '../pages/Etiquetas/Etiquetas'
 
 import ListarAnalise from '../pages/ListarAnalise/ListarAnalise'
 import NovaAnalise from '../pages/NovaAnalise/NovaAnalise'
@@ -53,6 +55,8 @@ const AppRoutes = () => {
         <Route path="/operador" element={<ProtectedRoute papeis={['operador']}><HomeOperador /></ProtectedRoute>} />
         <Route path="/operador/motoristas" element={<ProtectedRoute papeis={['operador']}><ListarMotorista /></ProtectedRoute>} />
         <Route path="/operador/motoristas/:id" element={<ProtectedRoute papeis={['operador']}><DesignarEntregas /></ProtectedRoute>} />
+        <Route path="/operador/motoristas/:id/etiquetas" element={<ProtectedRoute papeis={['operador']}><Etiquetas /></ProtectedRoute>} />
+        <Route path="/operador/reagendamentos" element={<ProtectedRoute papeis={['operador']}><Reagendamentos /></ProtectedRoute>} />
         <Route path="/motorista" element={<ProtectedRoute papeis={['motorista']}><HomeMotorista /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

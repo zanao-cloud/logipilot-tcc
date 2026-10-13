@@ -12,6 +12,7 @@ import {
   horaDaConclusao,
   ordenarEntregas,
   statusInfo,
+  urlDoComprovante,
 } from '../../services/entregas'
 import styles from './DesignarEntregas.module.css'
 
@@ -180,9 +181,17 @@ const DesignarEntregas = () => {
                     <small className="text-muted">Km previstos</small>
                   </div>
                 </div>
-                <Link to="/operador/motoristas" className="btn btn-sm btn-outline-primary">
-                  <i className="fas fa-arrow-left me-1"></i>Voltar
-                </Link>
+                <div className="d-flex gap-2">
+                  <Link
+                    to={`/operador/motoristas/${id}/etiquetas?data=${form.data}`}
+                    className="btn btn-sm btn-outline-primary"
+                  >
+                    <i className="fas fa-tags me-1"></i>Etiquetas
+                  </Link>
+                  <Link to="/operador/motoristas" className="btn btn-sm btn-outline-primary">
+                    <i className="fas fa-arrow-left me-1"></i>Voltar
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -342,6 +351,9 @@ const DesignarEntregas = () => {
                                 <span className="fw-semibold">{entrega.cliente}</span>
                                 <span className={`badge ${info.cor}`}>{info.rotulo}</span>
                                 {entrega.prioridade === 'alta' && <span className="badge bg-danger">Prioridade alta</span>}
+                                {entrega.reagendadaDeId && (
+                                  <span className="badge bg-secondary">Reagendada</span>
+                                )}
                               </div>
                               <div className="small text-muted">{entrega.endereco} · {entrega.cidade}</div>
                               <div className="small text-muted">
@@ -351,10 +363,25 @@ const DesignarEntregas = () => {
                               {entrega.observacoesOperador && (
                                 <div className="small"><i className="fas fa-circle-info me-1 text-muted"></i>{entrega.observacoesOperador}</div>
                               )}
+                              {entrega.recebidoPor && (
+                                <div className="small text-success-emphasis">
+                                  <i className="fas fa-signature me-1"></i>Recebido por {entrega.recebidoPor}
+                                </div>
+                              )}
                               {entrega.observacoes && (
                                 <div className="small text-primary-emphasis">
                                   <i className="fas fa-comment-dots me-1"></i>Motorista: {entrega.observacoes}
                                 </div>
+                              )}
+                              {entrega.temComprovante && (
+                                <a
+                                  className="small"
+                                  href={urlDoComprovante(entrega)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  <i className="fas fa-image me-1"></i>Ver foto do comprovante
+                                </a>
                               )}
                             </div>
                             <button

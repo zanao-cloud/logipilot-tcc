@@ -133,7 +133,7 @@ class EntregaServicoTest {
         when(entregas.findById(10L)).thenReturn(Optional.of(new Entrega()));
 
         assertThatThrownBy(() -> servico.atualizarParcialmente(10L,
-                new EntregaAtualizacao(StatusEntrega.AUSENTE, "  ", null, null)))
+                new EntregaAtualizacao(StatusEntrega.AUSENTE, "  ", null, null, null, null)))
                 .isInstanceOf(RegraDeNegocioException.class)
                 .hasMessageContaining("Descreva o que aconteceu");
     }
@@ -148,7 +148,7 @@ class EntregaServicoTest {
         when(entregas.findById(10L)).thenReturn(Optional.of(entrega));
 
         Entrega desfeita = servico.atualizarParcialmente(10L,
-                new EntregaAtualizacao(StatusEntrega.PENDENTE, null, null, null));
+                new EntregaAtualizacao(StatusEntrega.PENDENTE, null, null, null, null, null));
 
         assertThat(desfeita.getStatus()).isEqualTo(StatusEntrega.PENDENTE);
         assertThat(desfeita.getObservacoes()).isNull();
@@ -165,7 +165,7 @@ class EntregaServicoTest {
         when(entregas.findById(10L)).thenReturn(Optional.of(entrega));
 
         Entrega reordenada = servico.atualizarParcialmente(10L,
-                new EntregaAtualizacao(null, null, null, 1));
+                new EntregaAtualizacao(null, null, null, null, 1, null));
 
         assertThat(reordenada.getOrdem()).isEqualTo(1);
         assertThat(reordenada.getStatus()).isEqualTo(StatusEntrega.ENTREGUE);

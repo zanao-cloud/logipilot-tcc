@@ -15,6 +15,7 @@ server/.env
 
 # Build do Maven (back-end Spring)
 backend/target
+backend/comprovantes
 backend/.mvn/wrapper/maven-wrapper.jar
 
 # Editor directories and files
@@ -27,3 +28,4 @@ backend/.mvn/wrapper/maven-wrapper.jar
 *.njsproj
 *.sln
 *.sw?
+

@@ -28,7 +28,17 @@ spring:
   jackson:
     default-property-inclusion: always
 
+  servlet:
+    multipart:
+      # Fotos de comprovante tiradas pelo celular.
+      max-file-size: 8MB
+      max-request-size: 10MB
+
 logipilot:
+  comprovantes:
+    # As fotos ficam no disco; no banco guarda-se apenas o nome do arquivo.
+    diretorio: ${COMPROVANTES_DIR:comprovantes}
+
   cors:
     # Portas que o Vite usa quando a 5173 já está ocupada.
     origens: http://localhost:5173,http://localhost:5174,http://localhost:5175

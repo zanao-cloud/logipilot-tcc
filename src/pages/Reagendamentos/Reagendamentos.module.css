@@ -1,0 +1,49 @@
+.item {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--borda);
+}
+
+.item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.acoes {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.acoes input,
+.acoes select {
+  width: auto;
+  min-width: 9rem;
+}
+
+.codigo {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  background-color: #0f172a;
+  color: #fff;
+  border-radius: 0.375rem;
+  padding: 0.1rem 0.45rem;
+}
+
+@media (max-width: 575.98px) {
+  .acoes {
+    width: 100%;
+  }
+
+  .acoes > div,
+  .acoes input,
+  .acoes select,
+  .acoes button {
+    width: 100%;
+  }
+}

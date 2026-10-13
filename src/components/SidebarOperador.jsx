@@ -24,6 +24,9 @@ const SidebarOperador = () => {
         <NavLink to="/operador/motoristas" className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
           <i className="fas fa-truck me-2"></i>Motoristas
         </NavLink>
+        <NavLink to="/operador/reagendamentos" className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
+          <i className="fas fa-rotate me-2"></i>Reagendamentos
+        </NavLink>
         <NavLink to="/analises/nova" className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
           <i className="fas fa-plus me-2"></i>Nova análise
         </NavLink>

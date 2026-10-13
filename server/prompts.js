@@ -108,6 +108,76 @@ Formato exato da resposta:
   ]
 }`
 
+export const PROMPT_OPERACAO = `Você é o "Pilô", analista de operações logísticas do LogiPilot.
+
+Desta vez os dados NÃO vêm de uma planilha enviada pelo usuário: são os números que o próprio
+LogiPilot registrou — cada entrega designada pelo operador e fechada pelo motorista no aplicativo.
+
+REGRAS IMPORTANTES:
+- Responda SEMPRE em português do Brasil.
+- Responda SEMPRE em JSON válido, sem nenhum texto fora do JSON.
+- Use APENAS os números recebidos. NUNCA invente valores.
+- "pontualidade" é a porcentagem de entregas registradas dentro da janela combinada.
+- "ausente" significa que o motorista foi até o local e não havia ninguém para receber.
+- Separe claramente o que é fato observado do que é hipótese.
+- Comente motoristas e clientes pelo nome quando os números deles se destacarem.
+
+REGRAS DE NÚMEROS:
+- Arredonde todo valor para no máximo DUAS casas decimais.
+- Quando a unidade for "%", o valor precisa estar JÁ em porcentagem.
+- Use vírgula como separador decimal, no padrão brasileiro.
+
+Use exatamente o mesmo formato de resposta da análise de arquivos:
+{
+  "resumo": { "titulo": "string curta", "visaoGeral": "um parágrafo", "periodo": "string", "destaques": ["3 a 5 frases curtas"] },
+  "indicadores": [ { "nome": "string", "valor": "string", "unidade": "string", "tendencia": "alta" | "baixa" | "estavel", "situacao": "boa" | "atencao" | "critica" | "neutra" } ],
+  "diagnostico": { "scoreSaude": número inteiro de 0 a 100, "avaliacaoGeral": "um parágrafo", "fatosObservados": ["..."], "hipoteses": ["..."] },
+  "gargalos": [ { "titulo": "string", "descricao": "string", "severidade": "alta" | "media" | "baixa", "evidencia": "string", "impacto": "string" } ],
+  "oportunidades": [ { "titulo": "string", "descricao": "string", "impactoPotencial": "string", "esforco": "alto" | "medio" | "baixo" } ],
+  "planoDeAcao": [ { "titulo": "string", "descricao": "string", "prioridade": "alta" | "media" | "baixa", "prazo": "string", "resultadoEsperado": "string" } ],
+  "limitacoes": ["o que estes dados NÃO permitem concluir"]
+}
+
+Gere de 3 a 8 indicadores, de 1 a 5 gargalos, de 1 a 5 oportunidades e de 2 a 8 itens no plano de ação.`
+
+export const montarMensagemDaOperacao = (relatorio) => {
+  const t = relatorio.totais || {}
+  const partes = [
+    `Período analisado: ${relatorio.de} a ${relatorio.ate}`,
+    '',
+    '===== TOTAIS =====',
+    `entregas designadas: ${t.entregas}`,
+    `entregues: ${t.entregues}`,
+    `sem ninguém no local: ${t.ausentes}`,
+    `ainda pendentes: ${t.pendentes}`,
+    `entregues dentro da janela: ${t.noPrazo}`,
+    `pontualidade: ${t.pontualidade === null ? 'sem entregas concluídas' : t.pontualidade + '%'}`,
+    `km rodados nas paradas visitadas: ${t.kmRodados}`,
+    `volumes transportados: ${t.volumes}`,
+    '',
+    '===== POR MOTORISTA =====',
+  ]
+
+  for (const m of relatorio.porMotorista || []) {
+    partes.push(`${m.motorista} (placa ${m.placa || 'não informada'}): ${m.entregas} designadas, `
+      + `${m.entregues} entregues, ${m.ausentes} ausentes, pontualidade `
+      + `${m.pontualidade === null ? 'sem base' : m.pontualidade + '%'}, ${m.kmRodados} km`)
+  }
+
+  partes.push('', '===== POR CLIENTE =====')
+  for (const c of relatorio.porCliente || []) {
+    partes.push(`${c.cliente}: ${c.entregas} entregas, ${c.ausentes} sem ninguém no local, `
+      + `taxa de ausência ${c.taxaDeAusencia === null ? 'sem base' : c.taxaDeAusencia + '%'}`)
+  }
+
+  partes.push('', '===== POR DIA =====')
+  for (const d of relatorio.porDia || []) {
+    partes.push(`${d.data}: ${d.entregas} designadas, ${d.entregues} entregues, ${d.kmRodados} km`)
+  }
+
+  return partes.join('\n')
+}
+
 export const montarMensagemDaRota = (motorista, entregas) => {
   const linhas = entregas.map((entrega, indice) => [
     `${indice + 1}. id: ${entrega.id}`,
