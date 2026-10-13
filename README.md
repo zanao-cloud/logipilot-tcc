@@ -45,7 +45,19 @@ GRANT ALL PRIVILEGES ON logipilot.* TO 'logipilot'@'localhost';
 
 As **tabelas não precisam ser criadas à mão**: na primeira subida da API o Flyway executa os scripts de
 `backend/src/main/resources/db/migration` e cria tudo, já com os dados iniciais. Para apontar para outro
-banco, use as variáveis `DB_HOST`, `DB_PORTA`, `DB_NOME`, `DB_USUARIO` e `DB_SENHA`.
+banco, use as variáveis `DB_HOST`, `DB_PORTA`, `DB_NOME`, `DB_SENHA` e `DB_USUARIO`.
+
+> **Não edite uma migração que já rodou.** O Flyway guarda um checksum de cada script; mexer num arquivo
+> já aplicado — mesmo que só num comentário — faz a API recusar subir com *"Migration checksum mismatch"*.
+> Para mudar o esquema, crie um `V6__descricao.sql` novo. Se precisar mesmo corrigir um script antigo,
+> rode o `repair` para reescrever o checksum:
+>
+> ```bash
+> cd backend && ./mvnw org.flywaydb:flyway-maven-plugin:11.14.0:repair \
+>   -Dflyway.url="jdbc:mysql://localhost:3306/logipilot" \
+>   -Dflyway.user=logipilot -Dflyway.password=logipilot \
+>   -Dflyway.locations=filesystem:src/main/resources/db/migration
+> ```
 
 ## Como rodar
 
@@ -119,7 +131,7 @@ backend/
   pom.xml
   iniciar.sh                    resolve o JAVA_HOME e chama o Maven Wrapper
   ferramentas/
-    migrar-db-json.py           gerou o script de dados a partir do antigo db.json
+    migrar-db-json.mjs          gerou o script de dados a partir do antigo db.json
   src/main/java/br/com/logipilot/
     dominio/                    entidades JPA (Usuario, Cliente, Projeto, Entrega, Analise)
     repositorio/                interfaces Spring Data

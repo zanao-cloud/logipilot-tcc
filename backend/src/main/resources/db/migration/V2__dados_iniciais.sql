@@ -1,5 +1,5 @@
 -- Dados migrados do db.json (json-server) para o MySQL.
--- Gerado por backend/ferramentas/migrar-db-json.py.
+-- Gerado por backend/ferramentas/migrar-db-json.mjs.
 
 -- As senhas eram SHA-256 sem salt e não são convertíveis para BCrypt.
 -- Os acessos abaixo foram recriados com a mesma senha de desenvolvimento
