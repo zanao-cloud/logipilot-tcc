@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../services/api'
-import { gerarHash } from '../../services/senha'
 import { salvarUsuarioLogado } from '../../services/sessao'
 import styles from './CriarConta.module.css'
 
@@ -32,31 +31,25 @@ const CriarConta = () => {
     setEnviando(true)
 
     try {
-      const emailNormalizado = email.trim().toLowerCase()
-      const existentes = await api.get('/usuarios', { params: { email: emailNormalizado } })
-
-      if (existentes.data.length > 0) {
-        setErro('Já existe uma conta com esse e-mail.')
-        return
-      }
-
       // Quem cria a conta pela tela pública é sempre o gestor da operação.
       // Operadores e motoristas são cadastrados depois, em "Acessos".
-      const novoUsuario = {
+      // A senha vai em texto e o Spring guarda só o hash BCrypt dela.
+      const resposta = await api.post('/usuarios', {
         nome: nome.trim(),
-        email: emailNormalizado,
-        senha: await gerarHash(senha),
+        email: email.trim().toLowerCase(),
+        senha,
         papel: 'gestor',
         telefone: telefone.trim(),
-      }
-
-      const resposta = await api.post('/usuarios', novoUsuario)
+      })
 
       salvarUsuarioLogado(resposta.data)
       navigate('/dashboard')
     } catch (error) {
       console.error('Não foi possível criar a conta.', error)
-      setErro('Não foi possível criar a conta. Verifique se o json-server está rodando.')
+      setErro(
+        error.response?.data?.erro
+        || 'Não foi possível criar a conta. Verifique se a API está rodando (npm run api).',
+      )
     } finally {
       setEnviando(false)
     }

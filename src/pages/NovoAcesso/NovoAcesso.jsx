@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
-import { gerarHash } from '../../services/senha'
 import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 
@@ -32,27 +31,21 @@ const NovoAcesso = () => {
     setEnviando(true)
 
     try {
-      const acesso = {
+      // A senha vai em texto; quem gera o hash BCrypt é o Spring.
+      // O e-mail repetido também é recusado lá, com 409.
+      await api.post('/usuarios', {
         nome: nome.trim(),
         email: email.trim().toLowerCase(),
-        // No db.json fica apenas o hash da senha, nunca o texto digitado.
-        senha: await gerarHash(senha),
+        senha,
         papel,
         telefone: telefone.trim(),
         ...(papel === 'motorista' ? { placa: placa.trim().toUpperCase() } : {}),
-      }
+      })
 
-      const existente = await api.get('/usuarios', { params: { email: acesso.email } })
-      if (existente.data.length > 0) {
-        setErro('Já existe um acesso cadastrado com este e-mail.')
-        return
-      }
-
-      await api.post('/usuarios', acesso)
       navigate('/dashboard/acessos')
     } catch (error) {
       console.error('Não foi possível salvar o acesso.', error)
-      setErro('Não foi possível salvar o acesso. Tente novamente.')
+      setErro(error.response?.data?.erro || 'Não foi possível salvar o acesso. Tente novamente.')
     } finally {
       setEnviando(false)
     }

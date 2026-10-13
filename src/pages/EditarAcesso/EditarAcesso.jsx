@@ -14,6 +14,7 @@ const EditarAcesso = () => {
     telefone: '',
     placa: '',
   })
+  const [novaSenha, setNovaSenha] = useState('')
   const [carregando, setCarregando] = useState(true)
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState('')
@@ -40,23 +41,25 @@ const EditarAcesso = () => {
     setEnviando(true)
     setErro('')
     try {
-      const dadosAtualizados = {
+      if (novaSenha && novaSenha.length < 6) {
+        setErro('A nova senha precisa ter pelo menos 6 caracteres.')
+        return
+      }
+
+      // Senha em branco significa "manter a atual" — é assim que o Spring trata.
+      await api.put(`/usuarios/${id}`, {
         ...acesso,
         nome: acesso.nome.trim(),
         email: acesso.email.trim().toLowerCase(),
         telefone: acesso.telefone.trim(),
+        senha: novaSenha || null,
         ...(acesso.papel === 'motorista' ? { placa: acesso.placa?.trim().toUpperCase() } : { placa: '' }),
-      }
-      const existente = await api.get('/usuarios', { params: { email: dadosAtualizados.email } })
-      if (existente.data.some((usuario) => String(usuario.id) !== String(id))) {
-        setErro('Já existe outro acesso cadastrado com este e-mail.')
-        return
-      }
-      await api.put(`/usuarios/${id}`, dadosAtualizados)
+      })
+
       navigate('/dashboard/acessos')
     } catch (error) {
       console.error('Não foi possível atualizar o acesso.', error)
-      setErro('Não foi possível atualizar o acesso. Tente novamente.')
+      setErro(error.response?.data?.erro || 'Não foi possível atualizar o acesso. Tente novamente.')
     } finally {
       setEnviando(false)
     }
@@ -118,6 +121,20 @@ const EditarAcesso = () => {
               />
             </div>
           )}
+
+          <div className="mb-3">
+            <label className="form-label" htmlFor="novaSenha">Nova senha</label>
+            <input
+              id="novaSenha"
+              type="password"
+              className="form-control"
+              value={novaSenha}
+              onChange={(e) => setNovaSenha(e.target.value)}
+              minLength={6}
+              autoComplete="new-password"
+            />
+            <div className="form-text">Deixe em branco para manter a senha atual.</div>
+          </div>
 
           {erro && <div className="alert alert-danger py-2" role="alert">{erro}</div>}
           <button type="submit" className="btn btn-primary w-100" disabled={enviando}>

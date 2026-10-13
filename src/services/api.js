@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-// json-server rodando localmente a partir do db.json (npm run api)
+// API REST do Spring Boot (backend/, porta 8080). O Vite faz o proxy de /api.
 const api = axios.create({
 baseURL: '/api',
   timeout: 10000,

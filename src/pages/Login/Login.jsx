@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import api from '../../services/api'
-import { conferirSenha } from '../../services/senha'
 import { salvarUsuarioLogado } from '../../services/sessao'
 import styles from './Login.module.css'
 
@@ -19,13 +18,11 @@ const Login = () => {
     setEnviando(true)
 
     try {
-      const response = await api.get('/usuarios', { params: { email: email.trim().toLowerCase() } })
-      const usuario = response.data[0]
-
-      if (!usuario || !(await conferirSenha(senha, usuario.senha))) {
-        setErro('E-mail ou senha inválidos.')
-        return
-      }
+      // Quem confere a senha é o Spring: o hash BCrypt nunca sai do servidor.
+      const { data: usuario } = await api.post('/auth/login', {
+        email: email.trim().toLowerCase(),
+        senha,
+      })
 
       salvarUsuarioLogado(usuario)
 
@@ -42,7 +39,12 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Não foi possível fazer login.', error)
-      setErro('Não foi possível conectar ao servidor. Verifique se o json-server está rodando.')
+
+      if (error.response?.status === 401) {
+        setErro('E-mail ou senha inválidos.')
+      } else {
+        setErro('Não foi possível conectar à API. Verifique se ela está rodando (npm run api).')
+      }
     } finally {
       setEnviando(false)
     }
