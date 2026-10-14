@@ -21,6 +21,56 @@ mantendo o mesmo propósito e as funcionalidades essenciais, mas usando a stack 
 - **Spring Security** apenas para o BCrypt das senhas e o CORS
 - Express + Groq (servidor dedicado para a análise multimodal, o chat e a otimização de rota)
 
+## Para avaliação
+
+O projeto não roda só com `npm install && npm run dev`: além do front-end em React, ele tem uma API
+própria em Java e um banco SQL Server. São **quatro coisas para instalar** e **três processos para
+subir**. O caminho mais curto, do zero:
+
+```bash
+# 1. Ferramentas (macOS; no Windows, ver a seção do banco mais abaixo)
+brew install node openjdk@21 maven colima docker sqlcmd
+
+# 2. Banco: sobe o container do SQL Server
+colima start --vm-type=vz --vz-rosetta --cpu 4 --memory 6
+docker run -d --name logipilot-sqlserver \
+  -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=LogiPilot!2026" \
+  -p 1433:1433 --restart unless-stopped \
+  mcr.microsoft.com/azure-sql-edge:latest
+
+# 3. Cria o banco e o login (uma vez só)
+sqlcmd -S localhost,1433 -U sa -P 'LogiPilot!2026' -N disable -Q "
+CREATE DATABASE logipilot;
+CREATE LOGIN logipilot WITH PASSWORD = 'LogiPilot!2026', CHECK_POLICY = OFF;"
+sqlcmd -S localhost,1433 -U sa -P 'LogiPilot!2026' -N disable -d logipilot -Q "
+CREATE USER logipilot FOR LOGIN logipilot;
+ALTER ROLE db_owner ADD MEMBER logipilot;"
+
+# 4. Projeto
+npm install
+npm run dev:all
+```
+
+Abra `http://localhost:5173`. As tabelas e os dados iniciais são criados sozinhos pelo Flyway na
+primeira subida da API — não há script para rodar à mão.
+
+**Acesso para teste:** qualquer um dos cadastros abaixo, senha `123456`.
+
+| Perfil | E-mail | O que ele vê |
+|---|---|---|
+| Gestor | `joaozanao7@gmail.com` | Painel com indicadores, clientes, projetos, acessos e as análises |
+| Operador | `th1@gmail.com` | Designação de entregas, etiquetas e reagendamentos |
+| Motorista | `th@gmail.com` | Rota do dia, conferência de carga e registro das entregas |
+
+**O que dá para testar sem a chave da IA:** tudo, menos a qualidade do texto gerado. Sem a chave da Groq
+em `server/.env`, as rotas de análise e de otimização continuam respondendo — o servidor cai num cálculo
+local determinístico (`server/diagnosticoLocal.js`, `server/rotaLocal.js`, `server/operacaoLocal.js`).
+
+**Onde está cada coisa:** o front-end em React está em `src/` e segue a estrutura vista em aula
+(`pages/<Nome>/<Nome>.jsx`, `components/`, `services/api.js`, `routes/AppRoutes.jsx`). A API em Java está
+em `backend/`. O servidor de IA está em `server/`. O documento `GUIA_DE_DEFESA.md` explica, peça por peça,
+o que foi além do material da disciplina e por quê.
+
 ## Pré-requisitos
 
 | O quê | Versão | Instalação no macOS |
