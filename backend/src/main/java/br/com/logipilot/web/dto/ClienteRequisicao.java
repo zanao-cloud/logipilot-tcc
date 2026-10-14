@@ -12,11 +12,25 @@ public record ClienteRequisicao(
         String telefone,
         String email,
 
-        @NotBlank(message = "Informe o endereço de entrega.")
-        String endereco,
+        @NotBlank(message = "Informe o CEP.")
+        String cep,
+
+        @NotBlank(message = "Informe o logradouro.")
+        String logradouro,
+
+        @NotBlank(message = "Informe o número.")
+        String numero,
+
+        String complemento,
+
+        @NotBlank(message = "Informe o bairro.")
+        String bairro,
 
         @NotBlank(message = "Informe a cidade.")
         String cidade,
+
+        @NotBlank(message = "Informe a UF.")
+        String uf,
 
         LocalDate criadoEm) {
 }

@@ -3,6 +3,7 @@ package br.com.logipilot.config;
 import br.com.logipilot.dominio.Papel;
 import br.com.logipilot.dominio.Prioridade;
 import br.com.logipilot.dominio.StatusEntrega;
+import br.com.logipilot.dominio.StatusPacote;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,5 +21,6 @@ public class ConfiguracaoWeb implements WebMvcConfigurer {
         registro.addConverter(String.class, Papel.class, Papel::deJson);
         registro.addConverter(String.class, StatusEntrega.class, StatusEntrega::deJson);
         registro.addConverter(String.class, Prioridade.class, Prioridade::deJson);
+        registro.addConverter(String.class, StatusPacote.class, StatusPacote::deJson);
     }
 }

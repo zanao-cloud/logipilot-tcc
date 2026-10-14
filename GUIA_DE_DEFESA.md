@@ -84,7 +84,26 @@ usuário no `localStorage` do navegador.
 **Se ele perguntar "por que não usou Context?":** daria para usar; o `localStorage` foi escolhido
 porque o dado precisa sobreviver ao recarregamento, o que o Context sozinho não faz.
 
-### 2.4 `components/Grafico.jsx`
+### 2.4 Consulta de CEP no ViaCEP
+
+**O que é:** no cadastro de cliente, digitar o CEP preenche logradouro, bairro, cidade e UF sozinho.
+
+**Por quê:** endereço digitado à mão sai errado e impede localizar a empresa.
+
+**Como funciona:** `src/services/cep.js` tem uma instância própria do axios apontando para
+`viacep.com.br/ws`. Quando o campo chega a 8 dígitos, o formulário chama `buscarEndereco` e espalha a
+resposta nos campos. É instância própria porque a do projeto aponta para `/api`, que é a nossa API.
+
+**Este é um ponto forte, não um risco.** É exatamente o que a disciplina ensinou — `axios.create` com
+`baseURL`, `async/await` e `try/catch` — só que apontando para uma API pública em vez da API do
+professor. Se ele perguntar o que você aprendeu na matéria e aplicou por conta própria, esse é o melhor
+exemplo que você tem.
+
+**Detalhe que mostra atenção:** o ViaCEP responde **200 com `{"erro": true}`** quando o CEP não existe,
+em vez de devolver 404. Por isso o código checa o corpo da resposta, e não só o status. Se a consulta
+falhar, a tela avisa e deixa preencher à mão — a API externa é conveniência, não dependência.
+
+### 2.5 `components/Grafico.jsx`
 
 **O que é:** o gráfico de barras da análise, desenhado com SVG escrito à mão (sem biblioteca).
 
@@ -95,7 +114,7 @@ e peso ao projeto.
 cada barra como proporção dele. É `map()` sobre array — o mesmo da aula — gerando `<rect>` em vez
 de `<tr>`.
 
-### 2.5 `services/previsao.js`
+### 2.6 `services/previsao.js`
 
 **O que é:** a aba "Previsão" da análise. Calcula uma **regressão linear** e uma **média móvel** sobre
 a série de números.
@@ -109,7 +128,7 @@ média móvel suaviza a curva fazendo a média dos últimos N pontos.
 **Importante:** isto é matemática, não IA. Se ele perguntar "a IA que faz a previsão?", a resposta é
 **não** — a previsão é calculada no próprio navegador, sem chamar modelo nenhum.
 
-### 2.6 `components/LeitorDeCodigo.jsx`
+### 2.7 `components/LeitorDeCodigo.jsx`
 
 **O que é:** o leitor de QR da conferência de carga, que abre a câmera.
 
@@ -123,7 +142,7 @@ navegador.
 Safari. O componente detecta isso, avisa na tela e oferece um campo para digitar o código à mão. Ou
 seja: funciona em todo lugar, mas a câmera só no Chrome e no Android.
 
-### 2.7 Biblioteca `qrcode`
+### 2.8 Biblioteca `qrcode`
 
 **O que é:** gera a imagem do QR nas etiquetas imprimíveis.
 
@@ -133,7 +152,7 @@ de proporção para o problema.
 **Como funciona:** `QRCode.toDataURL(texto)` devolve a imagem como string embutida, que vai direto no
 `src` de um `<img>`. Por isso a folha de etiquetas imprime sem internet.
 
-### 2.8 Upload de foto com `FormData`
+### 2.9 Upload de foto com `FormData`
 
 **O que é:** o envio da foto do comprovante de entrega.
 
@@ -143,7 +162,7 @@ de proporção para o problema.
 **Como funciona:** monta um `FormData`, dá `append` no arquivo e manda com o mesmo `axios` da aula.
 É `api.post` igual aos outros, só muda o corpo.
 
-### 2.9 `window.print()`
+### 2.10 `window.print()`
 
 Uma linha, na página de etiquetas. Abre a janela de impressão do navegador. O CSS tem um bloco
 `@media print` que esconde a barra de botões e organiza as etiquetas em duas colunas na folha.
@@ -307,6 +326,39 @@ cálculo local. **Nunca se confia cegamente na saída do modelo.**
 
 ---
 
+## 4.5 Duas decisões de modelagem que valem explicar
+
+### O pacote é uma tabela separada da entrega
+
+**A pergunta que ele pode fazer:** "por que não guardar o código do pacote direto na entrega?"
+
+**A resposta:** porque são coisas diferentes no tempo. O volume chega ao galpão numa segunda-feira e
+pode ser designado na quarta. Entre os dois momentos ele existe, ocupa espaço e precisa aparecer no
+controle de estoque — mas não é entrega nenhuma ainda. Se o código morasse só na entrega, não haveria
+como listar o que está parado.
+
+**O que isso permitiu:** a tela de Estoque mostra quantos volumes estão parados e há quantos dias.
+
+**Detalhe bom de citar:** quando uma entrega dá "ninguém no local" e é reagendada, as **duas** entregas
+apontam para o **mesmo pacote** — porque é o mesmo volume, na segunda tentativa. O `status` do pacote
+acompanha: sai de `em_estoque` ao ser designado, vai para `entregue` quando a entrega conclui, e volta
+para `em_estoque` se a entrega for excluída.
+
+**Por que a entrega ainda guarda `codigo` e `volumes`, se já tem o pacote:** porque a entrega registra
+o que foi despachado **naquele dia**. Se o cadastro do pacote mudar depois, o histórico da entrega
+continua contando o que realmente saiu. É duplicação de propósito, não descuido.
+
+### O endereço do cliente virou sete campos
+
+Era um texto só (`endereco`). Virou CEP, logradouro, número, complemento, bairro, cidade e UF — com o
+CEP preenchendo o resto pelo ViaCEP.
+
+**O campo `endereco` continua existindo**, montado a partir de logradouro + número + complemento. Isso
+foi de propósito: é ele que a entrega copia e que aparece nas listagens, e mantê-lo evitou mexer em
+todas as telas que já o usavam.
+
+---
+
 ## 5. Perguntas prováveis
 
 **"Por que não usou a API do professor?"**
@@ -337,6 +389,16 @@ então os ícones somem; o resto roda.
 Hash BCrypt com salt no banco, e a API nunca devolve esse campo. A senha só trafega entre o navegador
 e o servidor.
 
+**"Esse 'esqueci minha senha' é seguro?"**
+Não, e isso é declarado. Sem servidor de e-mail, a verificação é o telefone do cadastro: quem souber
+e-mail e telefone de alguém troca a senha dessa pessoa. O correto seria link por e-mail com token que
+expira. A escolha foi por algo que funcionasse na apresentação sem depender de SMTP e de internet.
+**Diga isso antes de ele perguntar** — admitir o limite vale mais que ser pego nele.
+
+**"Como funciona o controle de estoque?"**
+Ver a seção 4.5. O resumo: o pacote entra no galpão como registro próprio, o operador escolhe da lista
+ao montar a rota, e o `status` do pacote acompanha a entrega automaticamente.
+
 **"Me mostra você alterando alguma coisa aqui."**
 Essa é a pergunta mais provável de pegar você. Treine antes **pelo menos um fluxo completo de ponta a
 ponta**: adicionar um campo novo no cadastro de cliente, por exemplo — coluna no SQL (migração nova),
@@ -350,6 +412,8 @@ a arquitetura.
 Declarar isto antes de ser perguntado passa mais segurança do que ser pego:
 
 - A proteção de rotas é **só no front**; a API não exige autenticação.
+- O **"esqueci minha senha"** confere apenas e-mail + telefone, sem e-mail de confirmação.
+- Os clientes cadastrados antes do endereço detalhado estão **sem CEP** até alguém editar.
 - A leitura de QR pela câmera **não funciona no Safari** (tem alternativa digitando).
 - A quilometragem é **estimativa digitada pelo operador**, não medida por GPS.
 - O projeto depende de **três processos** rodando ao mesmo tempo.

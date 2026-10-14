@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 import { salvarUsuarioLogado } from '../../services/sessao'
+import { mascaraTelefone, normalizarTelefone, telefoneValido } from '../../services/formatos'
 import styles from './CriarConta.module.css'
 
 const CriarConta = () => {
@@ -28,6 +29,11 @@ const CriarConta = () => {
       return
     }
 
+    if (!telefoneValido(telefone)) {
+      setErro('Telefone inválido. Use DDD + número, como (11) 93936-9341.')
+      return
+    }
+
     setEnviando(true)
 
     try {
@@ -39,7 +45,7 @@ const CriarConta = () => {
         email: email.trim().toLowerCase(),
         senha,
         papel: 'gestor',
-        telefone: telefone.trim(),
+        telefone: normalizarTelefone(telefone),
       })
 
       salvarUsuarioLogado(resposta.data)
@@ -99,9 +105,12 @@ const CriarConta = () => {
             id="telefone"
             className="form-control"
             value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
-            placeholder="(11) 90000-0000"
+            onChange={(e) => setTelefone(mascaraTelefone(e.target.value))}
+            placeholder="(11) 93936-9341"
+            inputMode="tel"
+            required
           />
+          <div className="form-text">Celular com 9 dígitos ou fixo com 8, sempre com DDD.</div>
         </div>
 
         <div className="mb-3">

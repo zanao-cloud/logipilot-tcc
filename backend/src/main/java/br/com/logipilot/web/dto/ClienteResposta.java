@@ -10,8 +10,15 @@ public record ClienteResposta(
         String responsavel,
         String telefone,
         String email,
-        String endereco,
+        String cep,
+        String logradouro,
+        String numero,
+        String complemento,
+        String bairro,
         String cidade,
+        String uf,
+        /* Montado a partir do logradouro, número e complemento. */
+        String endereco,
         LocalDate criadoEm) {
 
     public static ClienteResposta de(Cliente cliente) {
@@ -22,8 +29,14 @@ public record ClienteResposta(
                 cliente.getResponsavel(),
                 cliente.getTelefone(),
                 cliente.getEmail(),
-                cliente.getEndereco(),
+                cliente.getCep(),
+                cliente.getLogradouro(),
+                cliente.getNumero(),
+                cliente.getComplemento(),
+                cliente.getBairro(),
                 cliente.getCidade(),
+                cliente.getUf(),
+                cliente.getEndereco(),
                 cliente.getCriadoEm());
     }
 }

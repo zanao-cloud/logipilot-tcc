@@ -7,13 +7,15 @@ import static org.mockito.Mockito.when;
 
 import br.com.logipilot.dominio.Cliente;
 import br.com.logipilot.dominio.Entrega;
+import br.com.logipilot.dominio.Pacote;
 import br.com.logipilot.dominio.Papel;
 import br.com.logipilot.dominio.Prioridade;
 import br.com.logipilot.dominio.StatusEntrega;
+import br.com.logipilot.dominio.StatusPacote;
 import br.com.logipilot.dominio.Usuario;
 import br.com.logipilot.repositorio.EntregaRepository;
-import br.com.logipilot.servico.ClienteServico;
 import br.com.logipilot.servico.EntregaServico;
+import br.com.logipilot.servico.PacoteServico;
 import br.com.logipilot.servico.RegraDeNegocioException;
 import br.com.logipilot.servico.UsuarioServico;
 import br.com.logipilot.web.dto.EntregaAtualizacao;
@@ -44,15 +46,16 @@ class EntregaServicoTest {
     private UsuarioServico usuarios;
 
     @Mock
-    private ClienteServico clientes;
+    private PacoteServico pacotes;
 
     private EntregaServico servico;
     private Usuario motorista;
     private Cliente cliente;
+    private Pacote pacote;
 
     @BeforeEach
     void preparar() {
-        servico = new EntregaServico(entregas, usuarios, clientes);
+        servico = new EntregaServico(entregas, usuarios, pacotes);
 
         motorista = new Usuario();
         motorista.setId(2L);
@@ -63,13 +66,20 @@ class EntregaServicoTest {
         cliente.setId(1L);
         cliente.setNome("Mercado Azul");
 
+        pacote = new Pacote();
+        pacote.setId(7L);
+        pacote.setCodigo("CX-1042");
+        pacote.setVolumes(3);
+        pacote.setCliente(cliente);
+        pacote.setStatus(StatusPacote.EM_ESTOQUE);
+
         when(usuarios.buscar(2L)).thenReturn(motorista);
-        when(clientes.buscar(1L)).thenReturn(cliente);
+        when(pacotes.buscar(7L)).thenReturn(pacote);
         when(entregas.save(any(Entrega.class))).thenAnswer(chamada -> chamada.getArgument(0));
     }
 
     private EntregaRequisicao requisicao(LocalTime inicio, LocalTime fim) {
-        return new EntregaRequisicao(2L, 1L, "cx-1042", 3, "Rua das Flores, 120", "São Paulo",
+        return new EntregaRequisicao(2L, 7L, "Rua das Flores, 120", "São Paulo",
                 inicio, fim, new BigDecimal("12.5"), Prioridade.ALTA, "doca dos fundos",
                 LocalDate.of(2026, 10, 16), null);
     }
@@ -90,16 +100,28 @@ class EntregaServicoTest {
     }
 
     @Test
-    @DisplayName("a identificação do pacote é guardada em maiúsculas")
-    void normalizaOCodigoDoPacote() {
+    @DisplayName("a entrega copia o código e os volumes do pacote escolhido")
+    void copiaOsDadosDoPacote() {
         Entrega entrega = servico.designar(requisicao(LocalTime.of(8, 0), LocalTime.of(12, 0)));
 
         assertThat(entrega.getCodigo()).isEqualTo("CX-1042");
         assertThat(entrega.getVolumes()).isEqualTo(3);
+        assertThat(entrega.getPacote()).isSameAs(pacote);
+        assertThat(entrega.getCliente()).isSameAs(cliente);
     }
 
     @Test
-    @DisplayName("recusa dois pacotes com a mesma identificação na rota do dia")
+    @DisplayName("recusa designar um pacote que já saiu do estoque")
+    void recusaPacoteForaDoEstoque() {
+        pacote.setStatus(StatusPacote.DESIGNADO);
+
+        assertThatThrownBy(() -> servico.designar(requisicao(LocalTime.of(8, 0), LocalTime.of(12, 0))))
+                .isInstanceOf(RegraDeNegocioException.class)
+                .hasMessageContaining("não está em estoque");
+    }
+
+    @Test
+    @DisplayName("recusa o mesmo pacote duas vezes na rota do dia")
     void recusaCodigoRepetidoNaRota() {
         when(entregas.existsByCodigoIgnoreCaseAndMotoristaIdAndData(
                 "CX-1042", 2L, LocalDate.of(2026, 10, 16))).thenReturn(true);
@@ -130,7 +152,9 @@ class EntregaServicoTest {
     @Test
     @DisplayName("ausência sem observação é recusada")
     void exigeObservacaoNaAusencia() {
-        when(entregas.findById(10L)).thenReturn(Optional.of(new Entrega()));
+        Entrega semDesfecho = new Entrega();
+        semDesfecho.setPacote(pacote);
+        when(entregas.findById(10L)).thenReturn(Optional.of(semDesfecho));
 
         assertThatThrownBy(() -> servico.atualizarParcialmente(10L,
                 new EntregaAtualizacao(StatusEntrega.AUSENTE, "  ", null, null, null, null)))
@@ -142,6 +166,7 @@ class EntregaServicoTest {
     @DisplayName("voltar para pendente apaga o horário e a observação do registro")
     void desfazerLimpaRegistro() {
         Entrega entrega = new Entrega();
+        entrega.setPacote(pacote);
         entrega.setStatus(StatusEntrega.ENTREGUE);
         entrega.setObservacoes("recebido pelo gerente");
         entrega.setConcluidaEm(Instant.now());
@@ -159,6 +184,7 @@ class EntregaServicoTest {
     @DisplayName("a otimização de rota só mexe na ordem, sem tocar no desfecho")
     void reordenaSemAlterarStatus() {
         Entrega entrega = new Entrega();
+        entrega.setPacote(pacote);
         entrega.setStatus(StatusEntrega.ENTREGUE);
         entrega.setObservacoes("ok");
         entrega.setOrdem(5);
