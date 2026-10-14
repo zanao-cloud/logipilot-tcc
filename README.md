@@ -84,8 +84,8 @@ banco, use as variáveis `DB_HOST`, `DB_PORTA`, `DB_NOME`, `DB_SENHA` e `DB_USUA
 >
 > ```bash
 > cd backend && ./mvnw org.flywaydb:flyway-maven-plugin:11.14.0:repair \
->   -Dflyway.url="jdbc:mysql://localhost:3306/logipilot" \
->   -Dflyway.user=logipilot -Dflyway.password=logipilot \
+>   -Dflyway.url="jdbc:sqlserver://localhost:1433;databaseName=logipilot;encrypt=false;trustServerCertificate=true" \
+>   -Dflyway.user=logipilot -Dflyway.password='LogiPilot!2026' \
 >   -Dflyway.locations=filesystem:src/main/resources/db/migration
 > ```
 
@@ -135,8 +135,8 @@ A senha trafega em texto apenas entre o navegador e o servidor; no banco fica **
 (com salt), gerado pelo `BCryptPasswordEncoder` do Spring Security. A API nunca devolve esse hash: o DTO
 `UsuarioResposta` simplesmente não tem o campo.
 
-> Os acessos que vieram do `db.json` foram recriados pela migração com a mesma senha de desenvolvimento
-> que já valia lá (`123456`). **Troque essa senha em Dashboard → Acessos antes de qualquer uso real.**
+> Os acessos herdados das versões anteriores do banco usam a senha de desenvolvimento `123456`.
+> **Troque em Dashboard → Acessos antes de qualquer uso real.**
 
 ## Formatos do cadastro
 
@@ -199,7 +199,7 @@ e 409 para conflito (e-mail repetido, cliente com projeto ligado, ausência sem 
 
 ### Modelagem
 
-O que no `db.json` era campo repetido virou chave estrangeira:
+O que antes era campo de texto repetido virou chave estrangeira:
 
 | Tabela | Referências |
 |---|---|
@@ -358,6 +358,4 @@ server/            (Node — só a IA)
   operacaoLocal.js   diagnóstico da operação sem IA
   prompts.js         instruções enviadas ao modelo
 backend/           (Java — API REST e banco)
-db.json            arquivo do antigo json-server; fica no repositório apenas
-                   como registro da primeira migração, não é mais lido em execução
 ```
