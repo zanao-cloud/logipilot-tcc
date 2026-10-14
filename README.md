@@ -161,8 +161,6 @@ guardada para motoristas: ao mudar o papel do acesso, ela é descartada.
 backend/
   pom.xml
   iniciar.sh                    resolve o JAVA_HOME e chama o Maven Wrapper
-  ferramentas/
-    migrar-mysql-para-sqlserver.mjs   gerou o script de dados na troca de banco
   src/main/java/br/com/logipilot/
     dominio/                    entidades JPA (Usuario, Cliente, Projeto, Entrega, Analise)
     repositorio/                interfaces Spring Data

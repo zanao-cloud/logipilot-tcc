@@ -1,5 +1,4 @@
--- Dados migrados do MySQL para o Microsoft SQL Server.
--- Gerado por backend/ferramentas/migrar-mysql-para-sqlserver.mjs.
+-- Dados iniciais, migrados do banco que o projeto usava antes.
 --
 -- Os ids originais são preservados para as chaves estrangeiras continuarem
 -- válidas, por isso o SET IDENTITY_INSERT em cada tabela.
