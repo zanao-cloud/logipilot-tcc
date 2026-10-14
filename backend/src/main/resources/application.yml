@@ -6,9 +6,11 @@ spring:
     name: logipilot-api
 
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORTA:3306}/${DB_NOME:logipilot}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo&characterEncoding=UTF-8
+    # Microsoft SQL Server. encrypt=false e trustServerCertificate=true valem
+    # para o servidor local de desenvolvimento, que usa certificado autoassinado.
+    url: jdbc:sqlserver://${DB_HOST:localhost}:${DB_PORTA:1433};databaseName=${DB_NOME:logipilot};encrypt=false;trustServerCertificate=true
     username: ${DB_USUARIO:logipilot}
-    password: ${DB_SENHA:logipilot}
+    password: ${DB_SENHA:LogiPilot!2026}
 
   jpa:
     # O esquema é criado pelo Flyway (db/migration); o Hibernate só confere se

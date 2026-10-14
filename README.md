@@ -1,7 +1,7 @@
 # LogiPilot TCC
 
 Versão do LogiPilot reconstruída em **React + JavaScript puro** (sem TypeScript) no front-end e
-**Spring Boot + MySQL** no back-end, seguindo a arquitetura e os conceitos do curso: Vite,
+**Spring Boot + Microsoft SQL Server** no back-end, seguindo a arquitetura e os conceitos do curso: Vite,
 `react-router-dom` (HashRouter), Bootstrap 5, CSS Modules e Axios do lado do navegador; Spring MVC,
 Spring Data JPA, Flyway e Spring Security (BCrypt) do lado do servidor. O diagnóstico é gerado por uma
 chamada real à API da Groq através de um pequeno servidor Express dedicado. A aplicação também possui
@@ -17,7 +17,7 @@ mantendo o mesmo propósito e as funcionalidades essenciais, mas usando a stack 
 - Bootstrap 5 + CSS Modules
 - Axios
 - **Spring Boot 3.5 (Java 21)** — API REST de usuários, clientes, projetos, entregas e análises
-- **MySQL 8+** com **Flyway** (esquema versionado em SQL) e **Spring Data JPA**
+- **Microsoft SQL Server** com **Flyway** (esquema versionado em T-SQL) e **Spring Data JPA**
 - **Spring Security** apenas para o BCrypt das senhas e o CORS
 - Express + Groq (servidor dedicado para a análise multimodal, o chat e a otimização de rota)
 
@@ -28,20 +28,50 @@ mantendo o mesmo propósito e as funcionalidades essenciais, mas usando a stack 
 | Node | 20+ | `brew install node` |
 | JDK | 21 | `brew install openjdk@21` |
 | Maven | 3.9+ | `brew install maven` (o projeto também traz o `mvnw`) |
-| MySQL | 8+ | `brew install mysql && brew services start mysql` |
+| SQL Server | 2019+ | container — ver abaixo |
 
 > O JDK do Homebrew é *keg-only* e não entra no PATH do sistema. O script `backend/iniciar.sh`
 > resolve o `JAVA_HOME` sozinho, então não é preciso configurar nada à mão.
 
 ### Banco de dados
 
-Crie o banco e o usuário uma única vez:
+O SQL Server roda num container. **No Mac com chip Apple (M1–M4)** a Microsoft não publica
+imagem ARM do SQL Server, e a imagem x86 não funciona nem sob emulação — ela aborta com
+*"Invalid mapping of address ... in reserved address space"*. A saída é o **Azure SQL Edge**,
+que é o mesmo motor e o mesmo T-SQL, com build ARM nativo:
 
-```sql
-CREATE DATABASE logipilot CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'logipilot'@'localhost' IDENTIFIED BY 'logipilot';
-GRANT ALL PRIVILEGES ON logipilot.* TO 'logipilot'@'localhost';
+```bash
+brew install colima docker sqlcmd
+colima start --vm-type=vz --vz-rosetta --cpu 4 --memory 6
+
+docker run -d --name logipilot-sqlserver \
+  -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=LogiPilot!2026" \
+  -p 1433:1433 --restart unless-stopped \
+  mcr.microsoft.com/azure-sql-edge:latest
 ```
+
+Em **Windows ou Linux x86**, use a imagem oficial no lugar — o resto é idêntico:
+
+```bash
+docker run -d --name logipilot-sqlserver \
+  -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=LogiPilot!2026" \
+  -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+```
+
+Depois, crie o banco e o login da aplicação uma única vez:
+
+```bash
+sqlcmd -S localhost,1433 -U sa -P 'LogiPilot!2026' -N disable -Q "
+CREATE DATABASE logipilot;
+CREATE LOGIN logipilot WITH PASSWORD = 'LogiPilot!2026', CHECK_POLICY = OFF;"
+
+sqlcmd -S localhost,1433 -U sa -P 'LogiPilot!2026' -N disable -d logipilot -Q "
+CREATE USER logipilot FOR LOGIN logipilot;
+ALTER ROLE db_owner ADD MEMBER logipilot;"
+```
+
+> `-N disable` desliga a criptografia da conexão. O certificado do container é autoassinado e o
+> cliente moderno o rejeita; em desenvolvimento local, sem rede no meio, isso não é um problema.
 
 As **tabelas não precisam ser criadas à mão**: na primeira subida da API o Flyway executa os scripts de
 `backend/src/main/resources/db/migration` e cria tudo, já com os dados iniciais. Para apontar para outro
@@ -49,7 +79,7 @@ banco, use as variáveis `DB_HOST`, `DB_PORTA`, `DB_NOME`, `DB_SENHA` e `DB_USUA
 
 > **Não edite uma migração que já rodou.** O Flyway guarda um checksum de cada script; mexer num arquivo
 > já aplicado — mesmo que só num comentário — faz a API recusar subir com *"Migration checksum mismatch"*.
-> Para mudar o esquema, crie um `V6__descricao.sql` novo. Se precisar mesmo corrigir um script antigo,
+> Para mudar o esquema, crie um `V3__descricao.sql` novo. Se precisar mesmo corrigir um script antigo,
 > rode o `repair` para reescrever o checksum:
 >
 > ```bash
@@ -112,8 +142,9 @@ A senha trafega em texto apenas entre o navegador e o servidor; no banco fica **
 
 Placa e telefone seguem o padrão brasileiro, para o cadastro não aceitar valor inventado. A regra é a
 mesma em três camadas: máscara e aviso na tela (`src/services/formatos.js`), validação no serviço
-(`dominio/Formatos.java`) e `CHECK` no banco (migração V5) — assim nem um `INSERT` feito direto no MySQL
-passa com dado fora do padrão.
+(`dominio/Formatos.java`) e `CHECK` no banco — assim nem um `INSERT` feito direto no SQL Server passa com
+dado fora do padrão. Como o SQL Server não tem expressão regular, o `CHECK` usa as classes de caracteres
+do `LIKE`, com collation binária na placa para exigir maiúsculas.
 
 | Campo | Aceita | Guardado como |
 |---|---|---|
@@ -131,7 +162,7 @@ backend/
   pom.xml
   iniciar.sh                    resolve o JAVA_HOME e chama o Maven Wrapper
   ferramentas/
-    migrar-db-json.mjs          gerou o script de dados a partir do antigo db.json
+    migrar-mysql-para-sqlserver.mjs   gerou o script de dados na troca de banco
   src/main/java/br/com/logipilot/
     dominio/                    entidades JPA (Usuario, Cliente, Projeto, Entrega, Analise)
     repositorio/                interfaces Spring Data
@@ -141,11 +172,8 @@ backend/
   src/main/resources/
     application.yml
     db/migration/
-      V1__esquema.sql           DDL das tabelas
-      V2__dados_iniciais.sql    dados migrados do db.json
-      V3__identificacao_do_pacote.sql   código e volumes da caixa
-      V4__conferencia_comprovante_reagendamento.sql
-      V5__padroniza_placa_e_telefone.sql
+      V1__esquema.sql           DDL das tabelas, em T-SQL
+      V2__dados_iniciais.sql    dados migrados do banco anterior
 ```
 
 ### Endpoints
@@ -179,8 +207,9 @@ O que no `db.json` era campo repetido virou chave estrangeira:
 | `entrega` | `motorista_id` → `usuario`, `cliente_id` → `cliente` |
 | `analise` | `projeto_id` → `projeto`, `criado_por_id` → `usuario` |
 
-O retorno da IA (`serie_temporal`, `fontes`, `resultado`) não tem forma fixa, então fica em **colunas JSON**
-do MySQL em vez de virar dezenas de tabelas. O Hibernate sobe com `ddl-auto: validate`: quem cria o esquema
+O retorno da IA (`serie_temporal`, `fontes`, `resultado`) não tem forma fixa, então fica em
+**NVARCHAR(MAX) com `CHECK (ISJSON(...) = 1)`** em vez de virar dezenas de tabelas — o SQL Server não tem
+tipo JSON, mas valida e consulta JSON guardado em texto. O Hibernate sobe com `ddl-auto: validate`: quem cria o esquema
 é o Flyway, e o JPA apenas confere se as entidades batem com as tabelas — divergência derruba a aplicação
 na subida, em vez de dar erro só na primeira consulta.
 
@@ -330,5 +359,5 @@ server/            (Node — só a IA)
   prompts.js         instruções enviadas ao modelo
 backend/           (Java — API REST e banco)
 db.json            arquivo do antigo json-server; fica no repositório apenas
-                   como origem da migração para o MySQL, não é mais lido em execução
+                   como registro da primeira migração, não é mais lido em execução
 ```

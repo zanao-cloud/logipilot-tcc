@@ -17,7 +17,7 @@ import org.hibernate.type.SqlTypes;
 /**
  * Resultado de uma análise gerada pela IA. O retorno do modelo não tem forma
  * fixa (indicadores, gargalos, plano de ação, previsões...), então os três
- * campos abaixo ficam em colunas JSON do MySQL em vez de virar novas tabelas.
+ * campos abaixo ficam guardados como JSON em vez de virar novas tabelas.
  */
 @Entity
 @Table(name = "analise")
@@ -44,16 +44,18 @@ public class Analise {
     @Column(name = "criado_em", nullable = false)
     private LocalDate criadoEm;
 
+    // No SQL Server o SqlTypes.JSON vira NVARCHAR(MAX); o ISJSON na tabela
+    // garante que só entra JSON válido.
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "serie_temporal", columnDefinition = "json")
+    @Column(name = "serie_temporal", columnDefinition = "nvarchar(max)")
     private JsonNode serieTemporal;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "nvarchar(max)")
     private JsonNode fontes;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "nvarchar(max)")
     private JsonNode resultado;
 
     public Long getId() {
