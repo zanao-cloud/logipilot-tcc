@@ -36,7 +36,16 @@ public class Entrega {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
-    /** O que está escrito na etiqueta da caixa: é por aqui que o motorista acha o pacote. */
+    /** O volume que saiu do estoque para esta parada. */
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "pacote_id", nullable = false)
+    private Pacote pacote;
+
+    /**
+     * Código e volumes são copiados do pacote no momento da designação. Ficam
+     * guardados na entrega porque ela registra o que foi despachado naquele
+     * dia, mesmo que o cadastro do pacote mude depois.
+     */
     @Column(nullable = false, length = 40)
     private String codigo;
 
@@ -125,6 +134,14 @@ public class Entrega {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public Pacote getPacote() {
+        return pacote;
+    }
+
+    public void setPacote(Pacote pacote) {
+        this.pacote = pacote;
     }
 
     public String getCodigo() {

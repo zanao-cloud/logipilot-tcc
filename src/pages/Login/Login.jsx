@@ -93,7 +93,11 @@ const Login = () => {
           {enviando ? 'Entrando...' : 'Entrar'}
         </button>
 
-        <p className="text-center small mt-3 mb-0">
+        <p className="text-center small mt-3 mb-1">
+          <Link to="/esqueci-senha">Esqueci minha senha</Link>
+        </p>
+
+        <p className="text-center small mb-0">
           Ainda não tem conta? <Link to="/criar-conta">Criar conta</Link>
         </p>
       </form>

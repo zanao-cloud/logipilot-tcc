@@ -31,7 +31,28 @@ public class Cliente {
     @Column(length = 160)
     private String email;
 
-    /** Serve de sugestão quando o operador designa uma entrega. */
+    @Column(length = 8)
+    private String cep;
+
+    @Column(length = 160)
+    private String logradouro;
+
+    @Column(length = 20)
+    private String numero;
+
+    @Column(length = 80)
+    private String complemento;
+
+    @Column(length = 120)
+    private String bairro;
+
+    @Column(length = 2)
+    private String uf;
+
+    /**
+     * Endereço montado a partir de logradouro, número e complemento. Fica
+     * guardado porque é o que a entrega copia e o que aparece nas listagens.
+     */
     @Column(nullable = false, length = 200)
     private String endereco;
 
@@ -87,6 +108,54 @@ public class Cliente {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public String getLogradouro() {
+        return logradouro;
+    }
+
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
     }
 
     public String getEndereco() {

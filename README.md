@@ -21,6 +21,56 @@ mantendo o mesmo propósito e as funcionalidades essenciais, mas usando a stack 
 - **Spring Security** apenas para o BCrypt das senhas e o CORS
 - Express + Groq (servidor dedicado para a análise multimodal, o chat e a otimização de rota)
 
+## Para avaliação
+
+O projeto não roda só com `npm install && npm run dev`: além do front-end em React, ele tem uma API
+própria em Java e um banco SQL Server. São **quatro coisas para instalar** e **três processos para
+subir**. O caminho mais curto, do zero:
+
+```bash
+# 1. Ferramentas (macOS; no Windows, ver a seção do banco mais abaixo)
+brew install node openjdk@21 maven colima docker sqlcmd
+
+# 2. Banco: sobe o container do SQL Server
+colima start --vm-type=vz --vz-rosetta --cpu 4 --memory 6
+docker run -d --name logipilot-sqlserver \
+  -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=LogiPilot!2026" \
+  -p 1433:1433 --restart unless-stopped \
+  mcr.microsoft.com/azure-sql-edge:latest
+
+# 3. Cria o banco e o login (uma vez só)
+sqlcmd -S localhost,1433 -U sa -P 'LogiPilot!2026' -N disable -Q "
+CREATE DATABASE logipilot;
+CREATE LOGIN logipilot WITH PASSWORD = 'LogiPilot!2026', CHECK_POLICY = OFF;"
+sqlcmd -S localhost,1433 -U sa -P 'LogiPilot!2026' -N disable -d logipilot -Q "
+CREATE USER logipilot FOR LOGIN logipilot;
+ALTER ROLE db_owner ADD MEMBER logipilot;"
+
+# 4. Projeto
+npm install
+npm run dev:all
+```
+
+Abra `http://localhost:5173`. As tabelas e os dados iniciais são criados sozinhos pelo Flyway na
+primeira subida da API — não há script para rodar à mão.
+
+**Acesso para teste:** qualquer um dos cadastros abaixo, senha `123456`.
+
+| Perfil | E-mail | O que ele vê |
+|---|---|---|
+| Gestor | `joaozanao7@gmail.com` | Painel com indicadores, clientes, projetos, acessos e as análises |
+| Operador | `th1@gmail.com` | Designação de entregas, etiquetas e reagendamentos |
+| Motorista | `th@gmail.com` | Rota do dia, conferência de carga e registro das entregas |
+
+**O que dá para testar sem a chave da IA:** tudo, menos a qualidade do texto gerado. Sem a chave da Groq
+em `server/.env`, as rotas de análise e de otimização continuam respondendo — o servidor cai num cálculo
+local determinístico (`server/diagnosticoLocal.js`, `server/rotaLocal.js`, `server/operacaoLocal.js`).
+
+**Onde está cada coisa:** o front-end em React está em `src/` e segue a estrutura vista em aula
+(`pages/<Nome>/<Nome>.jsx`, `components/`, `services/api.js`, `routes/AppRoutes.jsx`). A API em Java está
+em `backend/`. O servidor de IA está em `server/`. O documento `GUIA_DE_DEFESA.md` explica, peça por peça,
+o que foi além do material da disciplina e por quê.
+
 ## Pré-requisitos
 
 | O quê | Versão | Instalação no macOS |
@@ -84,8 +134,8 @@ banco, use as variáveis `DB_HOST`, `DB_PORTA`, `DB_NOME`, `DB_SENHA` e `DB_USUA
 >
 > ```bash
 > cd backend && ./mvnw org.flywaydb:flyway-maven-plugin:11.14.0:repair \
->   -Dflyway.url="jdbc:mysql://localhost:3306/logipilot" \
->   -Dflyway.user=logipilot -Dflyway.password=logipilot \
+>   -Dflyway.url="jdbc:sqlserver://localhost:1433;databaseName=logipilot;encrypt=false;trustServerCertificate=true" \
+>   -Dflyway.user=logipilot -Dflyway.password='LogiPilot!2026' \
 >   -Dflyway.locations=filesystem:src/main/resources/db/migration
 > ```
 
@@ -135,8 +185,19 @@ A senha trafega em texto apenas entre o navegador e o servidor; no banco fica **
 (com salt), gerado pelo `BCryptPasswordEncoder` do Spring Security. A API nunca devolve esse hash: o DTO
 `UsuarioResposta` simplesmente não tem o campo.
 
-> Os acessos que vieram do `db.json` foram recriados pela migração com a mesma senha de desenvolvimento
-> que já valia lá (`123456`). **Troque essa senha em Dashboard → Acessos antes de qualquer uso real.**
+> Os acessos herdados das versões anteriores do banco usam a senha de desenvolvimento `123456`.
+> **Troque em Dashboard → Acessos antes de qualquer uso real.**
+
+### Esqueci minha senha
+
+A tela de login tem **Esqueci minha senha**. Como o projeto não tem servidor de e-mail, a verificação é
+feita pelo **telefone do cadastro**: informando e-mail e telefone que conferem, a pessoa define a senha
+nova na hora.
+
+⚠️ **Limitação conhecida, e deliberada:** quem souber o e-mail e o telefone de alguém consegue trocar a
+senha dessa pessoa. Numa aplicação de verdade isso seria um link por e-mail com token que expira. A
+escolha aqui foi por algo demonstrável sem depender de SMTP e de internet na hora da apresentação.
+Quem não lembra o telefone cadastrado continua dependendo do gestor, em Dashboard → Acessos.
 
 ## Formatos do cadastro
 
@@ -150,10 +211,27 @@ do `LIKE`, com collation binária na placa para exigir maiúsculas.
 |---|---|---|
 | Placa | Mercosul `ABC1D23` e antiga `ABC1234`, com ou sem traço, em qualquer caixa | `ABC1D23` (maiúsculas, sem separador) |
 | Telefone | celular com DDD e 9 dígitos, fixo com DDD e 8, com ou sem máscara | `11939369341` (só dígitos) |
+| CEP | 8 dígitos, com ou sem traço | `06454000` (só dígitos) |
 
 O DDD precisa começar de 1 a 9 e o celular precisa ter o nono dígito, então `999999`, `01912345678` e
 `11123456789` são recusados. A exibição volta formatada (`(11) 93936-9341`, `ABC-1234`). A placa só é
 guardada para motoristas: ao mudar o papel do acesso, ela é descartada.
+
+### Endereço do cliente
+
+O endereço deixou de ser um texto solto. O cadastro pede **CEP, logradouro, número, complemento,
+bairro, cidade e UF**, e o CEP preenche o resto sozinho: assim que os 8 dígitos ficam completos, o
+formulário consulta o **ViaCEP** (`src/services/cep.js`) e preenche logradouro, bairro, cidade e UF.
+Número e complemento continuam por conta de quem cadastra, porque o CEP não os informa.
+
+O ViaCEP é público e não precisa de chave. Se ele não responder, ou se o CEP não existir, a tela avisa
+e deixa preencher à mão — a consulta é uma conveniência, não uma dependência.
+
+O campo `endereco` de uma linha continua existindo no banco, montado a partir de logradouro, número e
+complemento. É ele que a entrega copia e que aparece nas listagens.
+
+> Os clientes cadastrados antes dessa mudança ficaram com o endereço antigo no campo `logradouro` e
+> sem CEP. Ao editar um deles, o formulário avisa e pede o CEP para completar.
 
 ## O back-end Spring
 
@@ -161,8 +239,6 @@ guardada para motoristas: ao mudar o papel do acesso, ela é descartada.
 backend/
   pom.xml
   iniciar.sh                    resolve o JAVA_HOME e chama o Maven Wrapper
-  ferramentas/
-    migrar-mysql-para-sqlserver.mjs   gerou o script de dados na troca de banco
   src/main/java/br/com/logipilot/
     dominio/                    entidades JPA (Usuario, Cliente, Projeto, Entrega, Analise)
     repositorio/                interfaces Spring Data
@@ -185,6 +261,8 @@ backend/
 | `GET/POST/PUT/DELETE` | `/clientes` | Cadastro de clientes |
 | `GET/POST/PUT/DELETE` | `/projetos` | Projetos. Aceita `?clienteId=` |
 | `GET/POST/PATCH/DELETE` | `/entregas` | Entregas. Aceita `?motoristaId=` e `?data=` |
+| `GET/POST/PUT/DELETE` | `/pacotes` | Estoque. Aceita `?status=em_estoque` |
+| `POST` | `/auth/recuperar-senha` | Redefine a senha conferindo o telefone do cadastro |
 | `GET` | `/entregas/reagendamento` | Fila de paradas ausentes ainda não reagendadas |
 | `POST` | `/entregas/{id}/reagendar` | Cria a nova tentativa |
 | `POST/GET` | `/entregas/{id}/comprovante` | Envia e devolve a foto do comprovante |
@@ -199,7 +277,7 @@ e 409 para conflito (e-mail repetido, cliente com projeto ligado, ausência sem 
 
 ### Modelagem
 
-O que no `db.json` era campo repetido virou chave estrangeira:
+O que antes era campo de texto repetido virou chave estrangeira:
 
 | Tabela | Referências |
 |---|---|
@@ -224,6 +302,31 @@ inexistente), as regras das entregas (posição na rota, janela invertida, entre
 motorista, código de pacote repetido, ausência sem observação, desfazer e reordenação) e os formatos de
 placa e telefone.
 
+## Estoque de pacotes
+
+O pacote existe **antes** da entrega. Em **Operador → Estoque** o volume dá entrada no galpão com a
+identificação da etiqueta, o cliente destinatário, a quantidade de volumes e, opcionalmente, peso,
+conteúdo e observações. Ele fica ali até alguém decidir para onde e com quem vai.
+
+O ciclo é controlado pelo campo `status` e muda sozinho conforme a entrega anda:
+
+| Status | Quando |
+|---|---|
+| `em_estoque` | deu entrada e ainda não foi designado |
+| `designado` | entrou na rota de um motorista |
+| `entregue` | a entrega foi concluída |
+
+Desfazer o registro de uma entrega devolve o pacote para `designado`; **excluir** a entrega devolve
+para `em_estoque`, a menos que outra entrega do mesmo pacote continue de pé — é o caso do
+reagendamento, em que as duas tentativas apontam para o mesmo volume.
+
+Enquanto está designado, o pacote não pode ser editado nem excluído: a entrega já registrou aquele
+código e aquela quantidade, e mudar o cadastro deixaria a rota mentindo.
+
+Na tela há busca por código, cliente ou conteúdo, filtro por situação e quatro indicadores — incluindo
+quantos **volumes** estão parados, que é o número que interessa a quem olha o galpão. Cada item mostra
+há quantos dias está ali.
+
 ## Clientes, projetos e entregas
 
 O cadastro de **clientes** fica em **Dashboard → Clientes** (só o gestor acessa) e guarda nome, documento,
@@ -233,9 +336,10 @@ O **projeto** não tem mais campo livre de cliente: em *Cadastro de Projeto* o c
 `select` alimentado pelos clientes cadastrados, e o endereço dele aparece como apoio logo abaixo.
 
 O **motorista entra sempre com a página vazia**. Quem monta a rota é o operador, em
-**Operador → Motoristas → Designar entregas**, informando cliente (o endereço vem preenchido do cadastro
-e pode ser ajustado), **identificação do pacote**, quantidade de volumes, cidade, janela de entrega,
-distância estimada, prioridade, data e instruções.
+**Operador → Motoristas → Designar entregas**, escolhendo um **pacote que está em estoque** — com busca
+por código, cliente ou conteúdo — e informando cidade, janela de entrega, distância estimada,
+prioridade, data e instruções. O código, os volumes e o endereço do destinatário vêm do pacote; o
+endereço continua editável, porque a entrega pode ser numa filial.
 
 A identificação do pacote é o que está escrito na etiqueta da caixa — é por ela que o motorista sabe qual
 volume da van pertence a qual parada. O código é gravado em maiúsculas e **não pode se repetir na rota do
@@ -358,6 +462,4 @@ server/            (Node — só a IA)
   operacaoLocal.js   diagnóstico da operação sem IA
   prompts.js         instruções enviadas ao modelo
 backend/           (Java — API REST e banco)
-db.json            arquivo do antigo json-server; fica no repositório apenas
-                   como registro da primeira migração, não é mais lido em execução
 ```

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import SidebarGestor from '../../components/SidebarGestor'
@@ -10,6 +10,8 @@ const ListarAcesso = () => {
   const [acessos, setAcessos] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [idAcessoAExcluir, setIdAcessoAExcluir] = useState(null)
+  const [busca, setBusca] = useState('')
+  const [filtroPapel, setFiltroPapel] = useState('todos')
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
@@ -26,6 +28,24 @@ const ListarAcesso = () => {
       })
       .finally(() => setCarregando(false))
   }, [])
+
+  // A busca olha nome, e-mail, telefone e placa de uma vez: o gestor às vezes
+  // só lembra da placa do veículo ou do final do telefone.
+  const visiveis = useMemo(() => {
+    const termo = busca.trim().toLowerCase()
+    const digitos = termo.replace(/\D/g, '')
+
+    return acessos.filter((acesso) => {
+      const casaPapel = filtroPapel === 'todos' || acesso.papel === filtroPapel
+      const casaBusca = termo === ''
+        || acesso.nome.toLowerCase().includes(termo)
+        || acesso.email.toLowerCase().includes(termo)
+        || (acesso.placa || '').toLowerCase().includes(termo)
+        || (digitos !== '' && (acesso.telefone || '').includes(digitos))
+
+      return casaPapel && casaBusca
+    })
+  }, [acessos, busca, filtroPapel])
 
   const abrirModal = (id) => {
     setIdAcessoAExcluir(id)
@@ -55,7 +75,33 @@ const ListarAcesso = () => {
           <div className="card-body">
             {erro && <div className="alert alert-warning" role="alert">{erro}</div>}
             {carregando && <p className="text-muted">Carregando acessos...</p>}
-            {acessos.length > 0 && (
+
+            <div className="row g-2 mb-3">
+              <div className="col-sm-7">
+                <label className="visually-hidden" htmlFor="busca">Buscar acesso</label>
+                <input
+                  id="busca"
+                  className="form-control form-control-sm"
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                  placeholder="Buscar por nome, e-mail, telefone ou placa"
+                />
+              </div>
+              <div className="col-sm-5">
+                <label className="visually-hidden" htmlFor="filtroPapel">Filtrar por papel</label>
+                <select
+                  id="filtroPapel"
+                  className="form-select form-select-sm"
+                  value={filtroPapel}
+                  onChange={(e) => setFiltroPapel(e.target.value)}
+                >
+                  <option value="todos">Todos os papéis</option>
+                  <option value="operador">Operadores</option>
+                  <option value="motorista">Motoristas</option>
+                </select>
+              </div>
+            </div>
+            {visiveis.length > 0 && (
               <div className="table-responsive"><table className="table table-bordered table-striped table-hover align-middle">
                 <thead className="table-success">
                   <tr>
@@ -67,7 +113,7 @@ const ListarAcesso = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {acessos.map((acesso) => (
+                  {visiveis.map((acesso) => (
                     <tr key={acesso.id}>
                       <td>{acesso.nome}</td>
                       <td>{acesso.email}</td>
@@ -93,7 +139,13 @@ const ListarAcesso = () => {
               </table></div>
             )}
 
-            {!carregando && !erro && acessos.length === 0 && <p className="text-muted">Nenhum acesso cadastrado.</p>}
+            {!carregando && !erro && visiveis.length === 0 && (
+              <p className="text-muted">
+                {acessos.length === 0
+                  ? 'Nenhum acesso cadastrado.'
+                  : 'Nenhum acesso encontrado com esse filtro.'}
+              </p>
+            )}
 
             <Link to="/dashboard/acessos/novo" className="btn btn-success">
               <i className="fas fa-plus me-1"></i>Novo Acesso

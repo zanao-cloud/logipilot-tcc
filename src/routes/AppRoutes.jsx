@@ -3,6 +3,7 @@ import { HashRouter, Navigate, Routes, Route } from 'react-router-dom'
 import Landing from '../pages/Landing/Landing'
 import Login from '../pages/Login/Login'
 import CriarConta from '../pages/CriarConta/CriarConta'
+import EsqueciSenha from '../pages/EsqueciSenha/EsqueciSenha'
 import HomeGestor from '../pages/HomeGestor/HomeGestor'
 import HomeOperador from '../pages/HomeOperador/HomeOperador'
 import HomeMotorista from '../pages/HomeMotorista/HomeMotorista'
@@ -22,6 +23,7 @@ import EditarAcesso from '../pages/EditarAcesso/EditarAcesso'
 import ListarMotorista from '../pages/ListarMotorista/ListarMotorista'
 import DesignarEntregas from '../pages/DesignarEntregas/DesignarEntregas'
 import Reagendamentos from '../pages/Reagendamentos/Reagendamentos'
+import Estoque from '../pages/Estoque/Estoque'
 import Etiquetas from '../pages/Etiquetas/Etiquetas'
 
 import ListarAnalise from '../pages/ListarAnalise/ListarAnalise'
@@ -36,6 +38,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
         <Route path="/criar-conta" element={<PublicOnlyRoute><CriarConta /></PublicOnlyRoute>} />
+        <Route path="/esqueci-senha" element={<PublicOnlyRoute><EsqueciSenha /></PublicOnlyRoute>} />
 
         <Route path="/dashboard" element={<ProtectedRoute papeis={['gestor']}><HomeGestor /></ProtectedRoute>} />
         <Route path="/dashboard/clientes" element={<ProtectedRoute papeis={['gestor']}><ListarCliente /></ProtectedRoute>} />
@@ -56,6 +59,7 @@ const AppRoutes = () => {
         <Route path="/operador/motoristas" element={<ProtectedRoute papeis={['operador']}><ListarMotorista /></ProtectedRoute>} />
         <Route path="/operador/motoristas/:id" element={<ProtectedRoute papeis={['operador']}><DesignarEntregas /></ProtectedRoute>} />
         <Route path="/operador/motoristas/:id/etiquetas" element={<ProtectedRoute papeis={['operador']}><Etiquetas /></ProtectedRoute>} />
+        <Route path="/operador/estoque" element={<ProtectedRoute papeis={['operador']}><Estoque /></ProtectedRoute>} />
         <Route path="/operador/reagendamentos" element={<ProtectedRoute papeis={['operador']}><Reagendamentos /></ProtectedRoute>} />
         <Route path="/motorista" element={<ProtectedRoute papeis={['motorista']}><HomeMotorista /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />

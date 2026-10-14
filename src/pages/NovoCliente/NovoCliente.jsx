@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 import { mascaraTelefone, normalizarTelefone, telefoneValido } from '../../services/formatos'
+import { buscarEndereco, cepValido, mascaraCep, normalizarCep } from '../../services/cep'
 import SidebarGestor from '../../components/SidebarGestor'
 import CredentialUser from '../../components/CredentialUser'
 
@@ -12,10 +13,17 @@ const NovoCliente = () => {
     responsavel: '',
     telefone: '',
     email: '',
-    endereco: '',
+    cep: '',
+    logradouro: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
     cidade: '',
+    uf: '',
   })
   const [enviando, setEnviando] = useState(false)
+  const [buscandoCep, setBuscandoCep] = useState(false)
+  const [avisoCep, setAvisoCep] = useState('')
   const [erro, setErro] = useState('')
   const navigate = useNavigate()
 
@@ -24,9 +32,47 @@ const NovoCliente = () => {
     setCliente((prev) => ({ ...prev, [name]: value }))
   }
 
+  /**
+   * Assim que o CEP fica completo, busca o endereço no ViaCEP e preenche o
+   * resto. O número e o complemento continuam por conta do usuário, porque o
+   * CEP não os informa.
+   */
+  const preencherPeloCep = async (valor) => {
+    setCliente((prev) => ({ ...prev, cep: mascaraCep(valor) }))
+    setAvisoCep('')
+
+    if (!cepValido(valor)) {
+      return
+    }
+
+    setBuscandoCep(true)
+
+    try {
+      const endereco = await buscarEndereco(valor)
+
+      if (!endereco) {
+        setAvisoCep('CEP não encontrado. Preencha o endereço à mão.')
+        return
+      }
+
+      setCliente((prev) => ({ ...prev, ...endereco }))
+      setAvisoCep('')
+    } catch (error) {
+      console.error('Não foi possível consultar o CEP.', error)
+      setAvisoCep('Não foi possível consultar o CEP agora. Preencha à mão.')
+    } finally {
+      setBuscandoCep(false)
+    }
+  }
+
   const enviarCliente = async (e) => {
     e.preventDefault()
     setErro('')
+
+    if (!cepValido(cliente.cep)) {
+      setErro('CEP inválido. Informe os 8 dígitos.')
+      return
+    }
 
     if (cliente.telefone && !telefoneValido(cliente.telefone)) {
       setErro('Telefone inválido. Use DDD + número, como (11) 3322-4455.')
@@ -36,30 +82,20 @@ const NovoCliente = () => {
     setEnviando(true)
 
     try {
-      const nome = cliente.nome.trim()
-      const existentes = await api.get('/clientes')
-      const jaCadastrado = existentes.data.some((c) => c.nome.toLowerCase() === nome.toLowerCase())
-
-      if (jaCadastrado) {
-        setErro('Já existe um cliente cadastrado com este nome.')
-        return
-      }
-
       await api.post('/clientes', {
-        nome,
-        documento: cliente.documento.trim(),
-        responsavel: cliente.responsavel.trim(),
+        ...cliente,
+        nome: cliente.nome.trim(),
         telefone: normalizarTelefone(cliente.telefone),
         email: cliente.email.trim().toLowerCase(),
-        endereco: cliente.endereco.trim(),
-        cidade: cliente.cidade.trim(),
+        cep: normalizarCep(cliente.cep),
+        uf: cliente.uf.trim().toUpperCase(),
         criadoEm: new Date().toISOString().slice(0, 10),
       })
 
       navigate('/dashboard/clientes')
     } catch (error) {
       console.error('Não foi possível salvar o cliente.', error)
-      setErro('Não foi possível salvar o cliente. Tente novamente.')
+      setErro(error.response?.data?.erro || 'Não foi possível salvar o cliente. Tente novamente.')
     } finally {
       setEnviando(false)
     }
@@ -107,15 +143,66 @@ const NovoCliente = () => {
             </div>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label" htmlFor="endereco">Endereço de entrega</label>
-            <input id="endereco" className="form-control" name="endereco" value={cliente.endereco} onChange={handleChange} required />
-            <div className="form-text">Usado como sugestão ao designar entregas para os motoristas.</div>
+          <hr className="my-3" />
+          <h2 className="h6 mb-3">Endereço de entrega</h2>
+
+          <div className="row">
+            <div className="col-sm-5 mb-3">
+              <label className="form-label" htmlFor="cep">CEP</label>
+              <input
+                id="cep"
+                className="form-control"
+                value={cliente.cep}
+                onChange={(e) => preencherPeloCep(e.target.value)}
+                placeholder="06454-000"
+                inputMode="numeric"
+                maxLength={9}
+                required
+              />
+              <div className="form-text">
+                {buscandoCep ? 'Buscando endereço...' : 'O endereço é preenchido sozinho.'}
+              </div>
+            </div>
+            <div className="col-sm-7 mb-3">
+              <label className="form-label" htmlFor="logradouro">Logradouro</label>
+              <input id="logradouro" className="form-control" name="logradouro" value={cliente.logradouro} onChange={handleChange} required />
+            </div>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label" htmlFor="cidade">Cidade</label>
-            <input id="cidade" className="form-control" name="cidade" value={cliente.cidade} onChange={handleChange} required />
+          {avisoCep && <div className="alert alert-warning py-2" role="alert">{avisoCep}</div>}
+
+          <div className="row">
+            <div className="col-sm-4 mb-3">
+              <label className="form-label" htmlFor="numero">Número</label>
+              <input id="numero" className="form-control" name="numero" value={cliente.numero} onChange={handleChange} required />
+            </div>
+            <div className="col-sm-8 mb-3">
+              <label className="form-label" htmlFor="complemento">Complemento</label>
+              <input id="complemento" className="form-control" name="complemento" value={cliente.complemento} onChange={handleChange} placeholder="Sala, bloco, galpão..." />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-sm-5 mb-3">
+              <label className="form-label" htmlFor="bairro">Bairro</label>
+              <input id="bairro" className="form-control" name="bairro" value={cliente.bairro} onChange={handleChange} required />
+            </div>
+            <div className="col-sm-5 mb-3">
+              <label className="form-label" htmlFor="cidade">Cidade</label>
+              <input id="cidade" className="form-control" name="cidade" value={cliente.cidade} onChange={handleChange} required />
+            </div>
+            <div className="col-sm-2 mb-3">
+              <label className="form-label" htmlFor="uf">UF</label>
+              <input
+                id="uf"
+                className="form-control text-uppercase"
+                name="uf"
+                value={cliente.uf}
+                onChange={handleChange}
+                maxLength={2}
+                required
+              />
+            </div>
           </div>
 
           {erro && <div className="alert alert-danger py-2" role="alert">{erro}</div>}

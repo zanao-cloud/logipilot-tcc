@@ -1,9 +1,11 @@
 package br.com.logipilot.servico;
 
 import br.com.logipilot.dominio.Entrega;
+import br.com.logipilot.dominio.Pacote;
 import br.com.logipilot.dominio.Papel;
 import br.com.logipilot.dominio.Prioridade;
 import br.com.logipilot.dominio.StatusEntrega;
+import br.com.logipilot.dominio.StatusPacote;
 import br.com.logipilot.dominio.Usuario;
 import br.com.logipilot.repositorio.EntregaRepository;
 import br.com.logipilot.web.dto.EntregaAtualizacao;
@@ -23,14 +25,14 @@ public class EntregaServico {
 
     private final EntregaRepository entregas;
     private final UsuarioServico usuarios;
-    private final ClienteServico clientes;
+    private final PacoteServico pacotes;
 
     public EntregaServico(EntregaRepository entregas,
                           UsuarioServico usuarios,
-                          ClienteServico clientes) {
+                          PacoteServico pacotes) {
         this.entregas = entregas;
         this.usuarios = usuarios;
-        this.clientes = clientes;
+        this.pacotes = pacotes;
     }
 
     @Transactional(readOnly = true)
@@ -68,21 +70,28 @@ public class EntregaServico {
                     "O fim da janela de entrega precisa ser depois do início.");
         }
 
-        // Dois pacotes com o mesmo código na rota do dia deixariam o motorista
-        // sem saber qual caixa é de qual parada.
-        String codigo = requisicao.codigo().trim().toUpperCase();
-        if (entregas.existsByCodigoIgnoreCaseAndMotoristaIdAndData(
-                codigo, motorista.getId(), requisicao.data())) {
+        Pacote pacote = pacotes.buscar(requisicao.pacoteId());
+
+        // Um pacote já designado está na rota de alguém; designar de novo
+        // criaria duas paradas para o mesmo volume.
+        if (pacote.getStatus() != StatusPacote.EM_ESTOQUE) {
             throw new RegraDeNegocioException(
-                    "Já existe um pacote com a identificação %s na rota deste motorista nesta data."
-                            .formatted(codigo));
+                    "O pacote %s não está em estoque: ele já foi designado ou entregue."
+                            .formatted(pacote.getCodigo()));
+        }
+        if (entregas.existsByCodigoIgnoreCaseAndMotoristaIdAndData(
+                pacote.getCodigo(), motorista.getId(), requisicao.data())) {
+            throw new RegraDeNegocioException(
+                    "O pacote %s já está na rota deste motorista nesta data."
+                            .formatted(pacote.getCodigo()));
         }
 
         Entrega entrega = new Entrega();
         entrega.setMotorista(motorista);
-        entrega.setCliente(clientes.buscar(requisicao.clienteId()));
-        entrega.setCodigo(codigo);
-        entrega.setVolumes(requisicao.volumes() == null ? 1 : requisicao.volumes());
+        entrega.setPacote(pacote);
+        entrega.setCliente(pacote.getCliente());
+        entrega.setCodigo(pacote.getCodigo());
+        entrega.setVolumes(pacote.getVolumes());
         entrega.setEndereco(requisicao.endereco().trim());
         entrega.setCidade(requisicao.cidade().trim());
         entrega.setJanelaInicio(requisicao.janelaInicio());
@@ -100,6 +109,9 @@ public class EntregaServico {
                 : proximaOrdem(motorista.getId(), requisicao.data()));
         entrega.setStatus(StatusEntrega.PENDENTE);
         entrega.setCriadoEm(Instant.now());
+
+        // O volume sai do estoque no momento em que entra numa rota.
+        pacotes.mudarStatus(pacote, StatusPacote.DESIGNADO);
 
         return entregas.save(entrega);
     }
@@ -138,6 +150,13 @@ public class EntregaServico {
                 // Ausência e reabertura não têm quem receba.
                 entrega.setRecebidoPor(null);
             }
+
+            // O estoque acompanha o desfecho: entregue sai de vez, qualquer
+            // outro desfecho mantém o volume como designado.
+            pacotes.mudarStatus(entrega.getPacote(),
+                    atualizacao.status() == StatusEntrega.ENTREGUE
+                            ? StatusPacote.ENTREGUE
+                            : StatusPacote.DESIGNADO);
         } else {
             if (atualizacao.observacoes() != null) {
                 entrega.setObservacoes(textoOuNulo(atualizacao.observacoes()));
@@ -160,7 +179,19 @@ public class EntregaServico {
 
     @Transactional
     public void excluir(Long id) {
-        entregas.delete(buscar(id));
+        Entrega entrega = buscar(id);
+        Pacote pacote = entrega.getPacote();
+
+        entregas.delete(entrega);
+
+        // Tirar a parada da rota devolve o volume para o galpão, a menos que
+        // outra entrega do mesmo pacote continue de pé.
+        boolean aindaEmRota = entregas.findAll().stream()
+                .anyMatch(outra -> outra.getPacote().getId().equals(pacote.getId()));
+
+        if (!aindaEmRota) {
+            pacotes.mudarStatus(pacote, StatusPacote.EM_ESTOQUE);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -219,6 +250,8 @@ public class EntregaServico {
 
         Entrega nova = new Entrega();
         nova.setMotorista(motorista);
+        // A nova tentativa é do mesmo volume: aponta para o mesmo pacote.
+        nova.setPacote(original.getPacote());
         nova.setCliente(original.getCliente());
         nova.setCodigo(original.getCodigo());
         nova.setVolumes(original.getVolumes());

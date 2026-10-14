@@ -4,6 +4,7 @@ import br.com.logipilot.dominio.Cliente;
 import br.com.logipilot.dominio.Formatos;
 import br.com.logipilot.repositorio.ClienteRepository;
 import br.com.logipilot.repositorio.EntregaRepository;
+import br.com.logipilot.repositorio.PacoteRepository;
 import br.com.logipilot.repositorio.ProjetoRepository;
 import br.com.logipilot.web.dto.ClienteRequisicao;
 import java.time.LocalDate;
@@ -17,13 +18,16 @@ public class ClienteServico {
     private final ClienteRepository clientes;
     private final ProjetoRepository projetos;
     private final EntregaRepository entregas;
+    private final PacoteRepository pacotes;
 
     public ClienteServico(ClienteRepository clientes,
                           ProjetoRepository projetos,
-                          EntregaRepository entregas) {
+                          EntregaRepository entregas,
+                          PacoteRepository pacotes) {
         this.clientes = clientes;
         this.projetos = projetos;
         this.entregas = entregas;
+        this.pacotes = pacotes;
     }
 
     @Transactional(readOnly = true)
@@ -77,6 +81,10 @@ public class ClienteServico {
             throw new RegraDeNegocioException(
                     "Este cliente tem entregas registradas e não pode ser excluído.");
         }
+        if (pacotes.existsByClienteId(id)) {
+            throw new RegraDeNegocioException(
+                    "Este cliente tem pacotes no sistema e não pode ser excluído.");
+        }
 
         clientes.delete(cliente);
     }
@@ -89,8 +97,35 @@ public class ClienteServico {
         cliente.setEmail(requisicao.email() == null || requisicao.email().isBlank()
                 ? null
                 : requisicao.email().trim().toLowerCase());
-        cliente.setEndereco(requisicao.endereco().trim());
+        String cep = requisicao.cep().replaceAll("[^0-9]", "");
+        if (cep.length() != 8) {
+            throw new RegraDeNegocioException("CEP inválido. Informe os 8 dígitos.");
+        }
+
+        String uf = requisicao.uf().trim().toUpperCase();
+        if (!uf.matches("[A-Z]{2}")) {
+            throw new RegraDeNegocioException("UF inválida. Use a sigla de dois caracteres.");
+        }
+
+        cliente.setCep(cep);
+        cliente.setLogradouro(requisicao.logradouro().trim());
+        cliente.setNumero(requisicao.numero().trim());
+        cliente.setComplemento(textoOuNulo(requisicao.complemento()));
+        cliente.setBairro(requisicao.bairro().trim());
         cliente.setCidade(requisicao.cidade().trim());
+        cliente.setUf(uf);
+        cliente.setEndereco(montarEndereco(cliente));
+    }
+
+    /**
+     * O endereço de uma linha continua existindo porque é o que a entrega copia
+     * e o que aparece nas listagens — agora montado a partir das partes.
+     */
+    private String montarEndereco(Cliente cliente) {
+        String base = "%s, %s".formatted(cliente.getLogradouro(), cliente.getNumero());
+        return cliente.getComplemento() == null
+                ? base
+                : "%s - %s".formatted(base, cliente.getComplemento());
     }
 
     private String telefoneValidado(String telefone) {

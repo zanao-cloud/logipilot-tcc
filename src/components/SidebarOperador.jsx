@@ -21,6 +21,9 @@ const SidebarOperador = () => {
         <NavLink to="/operador" end className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
           <i className="fas fa-home me-2"></i>Painel
         </NavLink>
+        <NavLink to="/operador/estoque" className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
+          <i className="fas fa-boxes-stacked me-2"></i>Estoque
+        </NavLink>
         <NavLink to="/operador/motoristas" className={({ isActive }) => `${styles.item} ${isActive ? styles.ativo : ''}`}>
           <i className="fas fa-truck me-2"></i>Motoristas
         </NavLink>

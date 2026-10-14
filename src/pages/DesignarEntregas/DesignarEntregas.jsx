@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import api from '../../services/api'
 import SidebarOperador from '../../components/SidebarOperador'
@@ -18,10 +18,7 @@ import {
 import styles from './DesignarEntregas.module.css'
 
 const entregaEmBranco = () => ({
-  clienteId: '',
-  cliente: '',
-  codigo: '',
-  volumes: 1,
+  pacoteId: '',
   endereco: '',
   cidade: '',
   janelaInicio: '08:00',
@@ -35,20 +32,29 @@ const entregaEmBranco = () => ({
 const DesignarEntregas = () => {
   const { id } = useParams()
   const [motorista, setMotorista] = useState(null)
-  const [clientes, setClientes] = useState([])
+  const [estoque, setEstoque] = useState([])
   const [entregas, setEntregas] = useState([])
   const [form, setForm] = useState(entregaEmBranco)
+  const [buscaPacote, setBuscaPacote] = useState('')
   const [carregando, setCarregando] = useState(true)
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState('')
   const [aviso, setAviso] = useState('')
   const [idEntregaAExcluir, setIdEntregaAExcluir] = useState(null)
 
+  const carregarEstoque = () => api
+    .get('/pacotes', { params: { status: 'em_estoque' } })
+    .then((resposta) => setEstoque(resposta.data))
+
   useEffect(() => {
-    Promise.all([api.get(`/usuarios/${id}`), api.get('/clientes'), api.get('/entregas')])
-      .then(([respostaMotorista, respostaClientes, respostaEntregas]) => {
+    Promise.all([
+      api.get(`/usuarios/${id}`),
+      api.get('/pacotes', { params: { status: 'em_estoque' } }),
+      api.get('/entregas'),
+    ])
+      .then(([respostaMotorista, respostaEstoque, respostaEntregas]) => {
         setMotorista(respostaMotorista.data)
-        setClientes(respostaClientes.data)
+        setEstoque(respostaEstoque.data)
         setEntregas(respostaEntregas.data.filter((e) => String(e.motoristaId) === String(id)))
       })
       .catch((error) => {
@@ -63,29 +69,41 @@ const DesignarEntregas = () => {
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Escolher o cliente já traz o endereço cadastrado, que continua editável
-  // (a entrega pode ser numa filial ou num endereço avulso).
-  const escolherCliente = (e) => {
-    const clienteId = e.target.value
-    const cliente = clientes.find((c) => String(c.id) === String(clienteId))
+  // Escolher o pacote já traz o endereço do destinatário, que continua
+  // editável (a entrega pode ser numa filial ou num endereço avulso).
+  const escolherPacote = (e) => {
+    const pacoteId = e.target.value
+    const pacote = estoque.find((p) => String(p.id) === String(pacoteId))
 
     setForm((prev) => ({
       ...prev,
-      clienteId,
-      cliente: cliente ? cliente.nome : '',
-      endereco: cliente ? cliente.endereco || '' : '',
-      cidade: cliente ? cliente.cidade || '' : '',
+      pacoteId,
+      endereco: pacote ? pacote.endereco || prev.endereco : '',
+      cidade: pacote ? pacote.cidade || '' : '',
     }))
   }
+
+  // O operador filtra o estoque por código, cliente ou conteúdo antes de
+  // escolher — num galpão com muitos volumes, a lista pura não serve.
+  const estoqueVisivel = useMemo(() => {
+    const termo = buscaPacote.trim().toLowerCase()
+
+    if (termo === '') return estoque
+
+    return estoque.filter((pacote) => pacote.codigo.toLowerCase().includes(termo)
+      || pacote.cliente.toLowerCase().includes(termo)
+      || (pacote.descricao || '').toLowerCase().includes(termo))
+  }, [estoque, buscaPacote])
+
+  const pacoteEscolhido = estoque.find((p) => String(p.id) === String(form.pacoteId))
 
   const designarEntrega = async (e) => {
     e.preventDefault()
     setErro('')
     setAviso('')
 
-    const cliente = clientes.find((c) => String(c.id) === String(form.clienteId))
-    if (!cliente) {
-      setErro('Selecione um cliente cadastrado.')
+    if (!pacoteEscolhido) {
+      setErro('Selecione um pacote do estoque.')
       return
     }
 
@@ -100,12 +118,9 @@ const DesignarEntregas = () => {
       const doDia = entregas.filter((entrega) => entrega.data === form.data)
       const maiorOrdem = doDia.reduce((maior, entrega) => Math.max(maior, Number(entrega.ordem) || 0), 0)
 
-      const nova = {
-        motoristaId: String(id),
-        clienteId: cliente.id,
-        cliente: cliente.nome,
-        codigo: form.codigo.trim().toUpperCase(),
-        volumes: Number(form.volumes) || 1,
+      const { data: nova } = await api.post('/entregas', {
+        motoristaId: Number(id),
+        pacoteId: Number(form.pacoteId),
         endereco: form.endereco.trim(),
         cidade: form.cidade.trim(),
         janelaInicio: form.janelaInicio,
@@ -115,16 +130,14 @@ const DesignarEntregas = () => {
         observacoesOperador: form.observacoesOperador.trim(),
         data: form.data,
         ordem: maiorOrdem + 1,
-        status: 'pendente',
-        observacoes: '',
-        concluidaEm: null,
-        criadoEm: new Date().toISOString(),
-      }
+      })
 
-      const resposta = await api.post('/entregas', nova)
-      setEntregas((atuais) => [...atuais, resposta.data])
+      setEntregas((atuais) => [...atuais, nova])
       setForm({ ...entregaEmBranco(), data: form.data })
-      setAviso(`Pacote ${nova.codigo} designado para ${cliente.nome}.`)
+      setBuscaPacote('')
+      // O pacote saiu do estoque: a lista precisa refletir isso na hora.
+      await carregarEstoque()
+      setAviso(`Pacote ${nova.codigo} designado para ${nova.cliente}.`)
     } catch (error) {
       console.error('Não foi possível designar a entrega.', error)
       setErro(error.response?.data?.erro || 'Não foi possível designar a entrega. Tente novamente.')
@@ -137,6 +150,8 @@ const DesignarEntregas = () => {
     try {
       await api.delete(`/entregas/${idEntregaAExcluir}`)
       setEntregas((atuais) => atuais.filter((entrega) => entrega.id !== idEntregaAExcluir))
+      // Tirar a parada da rota devolve o volume ao galpão.
+      await carregarEstoque()
     } catch (error) {
       console.error('Não foi possível remover a entrega.', error)
       setErro('Não foi possível remover a entrega.')
@@ -202,57 +217,55 @@ const DesignarEntregas = () => {
                   <div className="card-body">
                     <h2 className="h6 mb-3">Nova entrega</h2>
 
-                    <div className="mb-3">
-                      <label className="form-label" htmlFor="clienteId">Cliente</label>
-                      <select
-                        id="clienteId"
-                        className="form-select"
-                        name="clienteId"
-                        value={form.clienteId}
-                        onChange={escolherCliente}
-                        required
-                      >
-                        <option value="">Selecione um cliente</option>
-                        {clientes.map((cliente) => (
-                          <option key={cliente.id} value={cliente.id}>{cliente.nome}</option>
-                        ))}
-                      </select>
-                      {clientes.length === 0 && (
-                        <div className="form-text text-danger">
-                          Nenhum cliente cadastrado. Peça ao gestor para cadastrar os clientes.
-                        </div>
-                      )}
+                    <div className="mb-2">
+                      <label className="form-label" htmlFor="buscaPacote">Buscar no estoque</label>
+                      <input
+                        id="buscaPacote"
+                        className="form-control form-control-sm"
+                        value={buscaPacote}
+                        onChange={(e) => setBuscaPacote(e.target.value)}
+                        placeholder="Código, cliente ou conteúdo"
+                      />
                     </div>
 
-                    <div className="row">
-                      <div className="col-8 mb-3">
-                        <label className="form-label" htmlFor="codigo">Identificação do pacote</label>
-                        <input
-                          id="codigo"
-                          className={`form-control ${styles.codigo}`}
-                          name="codigo"
-                          value={form.codigo}
-                          onChange={handleChange}
-                          placeholder="Ex: CX-1042"
-                          maxLength={40}
-                          required
-                        />
-                        <div className="form-text">O que está escrito na etiqueta da caixa.</div>
-                      </div>
-                      <div className="col-4 mb-3">
-                        <label className="form-label" htmlFor="volumes">Volumes</label>
-                        <input
-                          id="volumes"
-                          type="number"
-                          min="1"
-                          step="1"
-                          className="form-control"
-                          name="volumes"
-                          value={form.volumes}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
+                    <div className="mb-3">
+                      <label className="form-label" htmlFor="pacoteId">Pacote</label>
+                      <select
+                        id="pacoteId"
+                        className="form-select"
+                        name="pacoteId"
+                        value={form.pacoteId}
+                        onChange={escolherPacote}
+                        required
+                      >
+                        <option value="">
+                          {estoqueVisivel.length === 0 ? 'Nenhum pacote encontrado' : 'Selecione um pacote'}
+                        </option>
+                        {estoqueVisivel.map((pacote) => (
+                          <option key={pacote.id} value={pacote.id}>
+                            {pacote.codigo} — {pacote.cliente} ({pacote.volumes} vol.)
+                          </option>
+                        ))}
+                      </select>
+
+                      {pacoteEscolhido ? (
+                        <div className="form-text">
+                          {pacoteEscolhido.volumes} volume(s)
+                          {pacoteEscolhido.pesoKg && ` · ${pacoteEscolhido.pesoKg} kg`}
+                          {pacoteEscolhido.descricao && ` · ${pacoteEscolhido.descricao}`}
+                        </div>
+                      ) : (
+                        <div className="form-text">
+                          {estoque.length} pacote(s) em estoque. A entrada é feita em{' '}
+                          <Link to="/operador/estoque">Estoque</Link>.
+                        </div>
+                      )}
+
+                      {estoque.length === 0 && (
+                        <div className="form-text text-danger">
+                          Nenhum pacote em estoque. Registre a entrada antes de designar.
+                        </div>
+                      )}
                     </div>
 
                     <div className="mb-3">
@@ -318,7 +331,7 @@ const DesignarEntregas = () => {
                       />
                     </div>
 
-                    <button type="submit" className="btn btn-primary w-100" disabled={enviando || clientes.length === 0}>
+                    <button type="submit" className="btn btn-primary w-100" disabled={enviando || estoque.length === 0}>
                       {enviando ? 'Designando...' : 'Designar entrega'}
                     </button>
                   </div>
