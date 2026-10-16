@@ -1,4 +1,4 @@
-# LogiPilot TCC
+# LogiPilot TCC 
 
 Versão do LogiPilot reconstruída em **React + JavaScript puro** (sem TypeScript) no front-end e
 **Spring Boot + Microsoft SQL Server** no back-end, seguindo a arquitetura e os conceitos do curso: Vite,
@@ -52,7 +52,7 @@ npm run dev:all
 ```
 
 Abra `http://localhost:5173`. As tabelas e os dados iniciais são criados sozinhos pelo Flyway na
-primeira subida da API — não há script para rodar à mão.
+primeira subida da API — não há script para rodar à mão.. 
 
 **Acesso para teste:** qualquer um dos cadastros abaixo, senha `123456`.
 
