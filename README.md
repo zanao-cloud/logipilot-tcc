@@ -77,7 +77,7 @@ Ordem
 
 4-Executar o banco de dados no SQL server 
 
-5-Dar este comendo no mesmo terminal (.\iniciar-api.bat) sem os parentes 
+5-Dar este comando no mesmo terminal pós executar o banco de dados  (.\iniciar-api.bat) sem os parentes 
 
 6-E por último em outro terminal npm run dev:all
 
